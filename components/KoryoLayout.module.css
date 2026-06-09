@@ -1,0 +1,226 @@
+/* ============================================================
+   全体ラッパー
+============================================================ */
+.pageWrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #EEEEEE;
+}
+
+/* ============================================================
+   ヘッダー
+   元HTML: height:120px, padding: 20px 200px 0px 200px, background:#FFFFFF
+============================================================ */
+.header {
+  background-color: #FFFFFF;
+  width: 100%;
+  height: 120px;
+  padding: 20px 200px 0 200px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* Koryo-fes ロゴ (左) */
+.headerLogo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  height: 65px;
+  padding-left: 40px;
+  align-self: flex-end;
+}
+
+.headerLogoText {
+  font-family: "Noto Serif JP", serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #000000;
+  margin-left: 5px;
+}
+
+/* クラス企画評価 タイトルブロック */
+.headerTitleBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  height: 100%;
+  margin-left: 20px;
+}
+
+.headerSubtitle {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #8cd15c;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.headerTitleLink {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  text-decoration: none;
+  color: inherit;
+  height: 65px;
+}
+
+.headerTitleText {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin-left: 5px;
+}
+
+.titleBlack {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.4;
+}
+
+.titleGreen {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #8cd15c;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   メインエリア（各ページのカードを中央揃えで包む）
+============================================================ */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ============================================================
+   フッター
+   元HTML: padding: 20px 200px 0px 200px, background:#FFFFFF
+============================================================ */
+.footer {
+  background-color: #FFFFFF;
+  width: 100%;
+  padding: 20px 200px 0 200px;
+  flex-shrink: 0;
+}
+
+.footerInner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.footerLogo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.footerLogoText {
+  font-family: "Noto Serif JP", serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: #000000;
+  margin-left: 8px;
+}
+
+.footerLinks {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.footerLink {
+  font-family: "Lato", "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.footerLink:hover {
+  color: #3983ea;
+  text-decoration: underline;
+}
+
+.footerDivider {
+  display: inline-block;
+  width: 1px;
+  height: 15px;
+  background-color: #000000;
+  margin: 0 20px;
+}
+
+.copyright {
+  font-family: "Lato", "Noto Sans JP", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+  text-align: left;
+  padding: 8px 0;
+  margin: 0;
+}
+
+/* ============================================================
+   レスポンシブ
+============================================================ */
+@media screen and (max-width: 900px) {
+  .header,
+  .footer {
+    padding: 20px 40px 0 40px;
+  }
+  .header {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .header {
+    padding: 16px 16px 0 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+  }
+  .headerLogo {
+    padding-left: 0;
+    height: auto;
+  }
+  .headerTitleBlock {
+    margin-left: 0;
+    height: auto;
+  }
+  .footer {
+    padding: 16px 16px 0 16px;
+  }
+  .footerInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .footerLinks {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .footerDivider {
+    display: none;
+  }
+}
