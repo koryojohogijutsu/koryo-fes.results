@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { LoginForm } from "../../components/LoginForm";
+import { LoginForm } from "@/components/LoginForm";
 
 export const metadata = {
   title: "蛟龍祭 ログイン画面｜第60回蛟龍祭 実行委員会",
