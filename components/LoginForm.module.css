@@ -1,0 +1,369 @@
+/* ========================
+   Page wrapper
+======================== */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+/* ========================
+   Header
+======================== */
+.simpleHeader {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.headerTop {
+  background-color: #0092d7;
+  padding: 4px 16px;
+}
+
+.benesseLabel {
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+
+.headerMain {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logoWrap {
+  display: flex;
+  align-items: center;
+}
+
+.logoText {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0092d7;
+  letter-spacing: -0.01em;
+}
+
+.headerTitle {
+  font-size: 14px;
+  color: #555;
+  border-left: 1px solid #ccc;
+  padding-left: 16px;
+}
+
+/* ========================
+   Main / Form container
+======================== */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.contBox {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 28px 32px 32px;
+  width: 100%;
+  max-width: 540px;
+}
+
+/* ========================
+   Form sections
+======================== */
+.formSection {
+  margin-bottom: 20px;
+}
+
+.formTtl {
+  margin-bottom: 6px;
+}
+
+.formTtl h2 {
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+}
+
+.textInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.textInput:focus {
+  border-color: #0092d7;
+  box-shadow: 0 0 0 2px rgba(0, 146, 215, 0.15);
+}
+
+.textInput:disabled {
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+}
+
+/* Password field with show/hide */
+.passwordWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrap .textInput {
+  padding-right: 56px;
+}
+
+.showPassBtn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  padding: 3px 7px;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.showPassBtn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Error message */
+.errorMsg {
+  color: #d33;
+  font-size: 14px;
+  margin-bottom: 16px;
+  padding: 0 0 4px;
+  white-space: pre-line;
+}
+
+/* Checkbox area */
+.checkboxArea {
+  margin-bottom: 20px;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+}
+
+.checkLabel input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: #0092d7;
+}
+
+/* ========================
+   Login button
+======================== */
+.btnWrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.loginBtn {
+  background-color: #f60;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 48px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  transition: background-color 0.2s, opacity 0.2s;
+  min-width: 180px;
+}
+
+.loginBtn:hover:not(:disabled) {
+  background-color: #e55a00;
+}
+
+.loginBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================
+   External (Google) login
+======================== */
+.externalArea {
+  border-top: 1px solid #eee;
+  padding-top: 28px;
+  margin-bottom: 24px;
+}
+
+.externalTitle {
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.externalNote {
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.externalBtnWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.googleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: 220px;
+  padding: 0 8px 0 0;
+  height: 40px;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+  font-size: 14px;
+  font-weight: 700;
+  color: #666;
+  font-family: 'Roboto', sans-serif;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.googleBtn:hover:not(:disabled) {
+  box-shadow: 3px 3px 3px #c6dafb, -3px -3px 3px #c6dafb, 3px -3px 3px #c6dafb, -3px 3px 3px #c6dafb;
+}
+
+.googleBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.googleBtn svg {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* ========================
+   Links
+======================== */
+.linkList {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.linkList li {
+  margin-bottom: 6px;
+}
+
+.linkList li a {
+  font-size: 13px;
+  color: #0092d7;
+}
+
+/* Note text */
+.noteList {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.noteList li {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+/* Foot menu */
+.footMenu {
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ========================
+   Footer
+======================== */
+.footer {
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+  padding: 16px 20px;
+}
+
+.footerInner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.footerLogo {
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+}
+
+.footerLinks {
+  list-style: none;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footerLinks li a {
+  font-size: 11px;
+  color: #555;
+}
+
+.copyright {
+  font-size: 11px;
+  color: #888;
+}
+
+/* ========================
+   Responsive
+======================== */
+@media screen and (max-width: 600px) {
+  .contBox {
+    padding: 20px 16px 24px;
+    border: none;
+    border-radius: 0;
+  }
+
+  .main {
+    padding: 0 0 32px;
+  }
+
+  .loginBtn {
+    width: 100%;
+  }
+
+  .footerLinks {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
