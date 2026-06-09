@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 
 // デモ用ユーザー（本番ではDBに置き換えてください）
 const DEMO_USERS = [
-  { id: "1", loginId: "SASSI0000000001", password: "password123", name: "テストユーザー1" },
-  { id: "2", loginId: "test@example.com", password: "password123", name: "テストユーザー2" },
+  { id: "1", loginId: "admin", password: "password123", name: "管理者" },
+  { id: "2", loginId: "test@koryo-fes.jp", password: "password123", name: "テストユーザー" },
 ];
 
 const providers: NextAuthOptions["providers"] = [
