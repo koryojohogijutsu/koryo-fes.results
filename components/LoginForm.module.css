@@ -1,368 +1,480 @@
-/* ========================
-   Page wrapper
-======================== */
-.page {
+/* ============================================================
+   全体ラッパー
+============================================================ */
+.pageWrap {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #fff;
+  font-family: "Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   simpleHeader
+============================================================ */
+.simpleHeader {
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Benesseロゴバー */
+.benesseHeaderBar {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.benesseHeaderBox {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 6px 10px;
+}
+
+.benesseHeaderLogo {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* マナビジョンロゴ行 */
+.wFix {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.manageLogo {
+  margin: 0;
+  line-height: 1;
+}
+
+.manageLogo a {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.headerTxt {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  padding-left: 12px;
+  border-left: 1px solid #ccc;
+}
+
+/* ============================================================
+   コンテンツエリア
+============================================================ */
+.col1 {
+  flex: 1;
   background-color: #f5f5f5;
 }
 
-/* ========================
-   Header
-======================== */
-.simpleHeader {
-  background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.headerTop {
-  background-color: #0092d7;
-  padding: 4px 16px;
-}
-
-.benesseLabel {
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 0.05em;
-}
-
-.headerMain {
+.contBoxWrap {
   max-width: 760px;
   margin: 0 auto;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.logoWrap {
-  display: flex;
-  align-items: center;
-}
-
-.logoText {
-  font-size: 20px;
-  font-weight: bold;
-  color: #0092d7;
-  letter-spacing: -0.01em;
-}
-
-.headerTitle {
-  font-size: 14px;
-  color: #555;
-  border-left: 1px solid #ccc;
-  padding-left: 16px;
-}
-
-/* ========================
-   Main / Form container
-======================== */
-.main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 24px 16px 40px;
+  padding: 20px 10px 40px;
 }
 
 .contBox {
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 28px 32px 32px;
-  width: 100%;
-  max-width: 540px;
+  padding: 20px 30px 30px;
 }
 
-/* ========================
-   Form sections
-======================== */
+/* ============================================================
+   フォーム共通
+============================================================ */
+.formInput {
+  /* wrapper */
+}
+
 .formSection {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
-.formTtl {
-  margin-bottom: 6px;
+.formTtl01 {
+  margin-bottom: 4px;
 }
 
-.formTtl h2 {
+.formTtl01 h2 {
   font-size: 13px;
   font-weight: bold;
   color: #333;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: none;
 }
 
-.textInput {
+/* テキスト入力 */
+.loginId,
+.loginPass {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #bbb;
-  border-radius: 3px;
+  max-width: 400px;
+  padding: 7px 8px;
+  border: 1px solid #aaa;
+  border-radius: 2px;
   font-size: 14px;
   color: #333;
   background-color: #fff;
-  transition: border-color 0.2s;
+  box-sizing: border-box;
   outline: none;
 }
 
-.textInput:focus {
+.loginId:focus,
+.loginPass:focus {
   border-color: #0092d7;
-  box-shadow: 0 0 0 2px rgba(0, 146, 215, 0.15);
+  box-shadow: 0 0 3px rgba(0,146,215,0.3);
 }
 
-.textInput:disabled {
-  background-color: #f7f7f7;
-  cursor: not-allowed;
+.entered {
+  /* same as above, already styled */
 }
 
-/* Password field with show/hide */
-.passwordWrap {
-  position: relative;
+/* パスワード欄 */
+.formPasswd {
   display: flex;
   align-items: center;
 }
 
-.passwordWrap .textInput {
-  padding-right: 56px;
+.pwcheck {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
 }
 
-.showPassBtn {
-  position: absolute;
-  right: 8px;
-  background: none;
-  border: 1px solid #bbb;
-  border-radius: 3px;
-  padding: 3px 7px;
-  font-size: 11px;
-  color: #666;
-  cursor: pointer;
-  white-space: nowrap;
+/* エラー */
+.loginfalse {
+  /* wrapper */
 }
 
-.showPassBtn:hover {
-  background-color: #f0f0f0;
+.loginfalsInner {
+  /* wrapper */
 }
 
-/* Error message */
-.errorMsg {
-  color: #d33;
-  font-size: 14px;
-  margin-bottom: 16px;
-  padding: 0 0 4px;
-  white-space: pre-line;
+.loginfalseText {
+  color: #c00;
+  margin: 0;
 }
 
-/* Checkbox area */
-.checkboxArea {
-  margin-bottom: 20px;
+/* ============================================================
+   チェックボックスリスト
+============================================================ */
+.formList03 {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
 }
 
-.checkLabel {
+.formList03 li {
+  margin-bottom: 6px;
+}
+
+.formList03 label {
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
   font-size: 13px;
-  color: #333;
 }
 
-.checkLabel input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
+.formList03 input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  margin: 0;
   accent-color: #0092d7;
 }
 
-/* ========================
-   Login button
-======================== */
-.btnWrap {
+/* ============================================================
+   ログインボタン
+============================================================ */
+.formBtn01 {
+  margin-bottom: 0;
   text-align: center;
-  margin-bottom: 24px;
 }
 
-.loginBtn {
-  background-color: #f60;
+.formBtn01 button {
+  background-color: #ff6600;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 12px 48px;
+  border-radius: 3px;
+  padding: 11px 50px;
   font-size: 16px;
   font-weight: bold;
-  letter-spacing: 0.05em;
-  transition: background-color 0.2s, opacity 0.2s;
-  min-width: 180px;
+  cursor: pointer;
+  min-width: 160px;
+  transition: background-color 0.15s;
+  font-family: inherit;
 }
 
-.loginBtn:hover:not(:disabled) {
-  background-color: #e55a00;
+.formBtn01 button:hover:not(:disabled) {
+  background-color: #e05a00;
 }
 
-.loginBtn:disabled {
-  opacity: 0.6;
+.formBtn01 button:disabled {
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
-/* ========================
-   External (Google) login
-======================== */
-.externalArea {
-  border-top: 1px solid #eee;
-  padding-top: 28px;
-  margin-bottom: 24px;
+/* ============================================================
+   他のIDでログイン (#exbc_longin_area 相当)
+============================================================ */
+.exbcLoginArea {
+  margin: 48px 0;
 }
 
-.externalTitle {
-  font-size: 15px;
-  font-weight: bold;
+.exbcLoginTitle {
+  font-size: 1.25em;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.exbcNote {
+  font-size: 10px;
+  text-align: center;
+  line-height: 1.3;
+  margin-bottom: 20px;
   color: #333;
 }
 
-.externalNote {
-  font-size: 11px;
-  text-align: center;
-  line-height: 1.5;
-  color: #666;
-  margin-bottom: 16px;
-}
-
-.externalBtnWrap {
+.exbcLoginAreaBtn {
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
 }
 
-.googleBtn {
+/* SNSボタン共通 (a タグと同じ見た目) */
+.exbcSnsBtn {
+  text-decoration: none;
+  border-radius: 3px;
+  border: solid 1px #EEE;
+  background-color: #FFF;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 16%);
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  justify-content: flex-start;
   width: 220px;
-  padding: 0 8px 0 0;
-  height: 40px;
-  border: 1px solid #eee;
-  border-radius: 3px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
-  font-size: 14px;
-  font-weight: 700;
-  color: #666;
-  font-family: 'Roboto', sans-serif;
-  transition: box-shadow 0.2s;
+  margin-bottom: 20px;
+  padding-right: 8px;
   cursor: pointer;
+  font-family: inherit;
+  transition: box-shadow 0.3s, background-color 0.3s;
 }
 
-.googleBtn:hover:not(:disabled) {
+.exbcSnsBtn:hover,
+.exbcSnsBtn:focus {
   box-shadow: 3px 3px 3px #c6dafb, -3px -3px 3px #c6dafb, 3px -3px 3px #c6dafb, -3px 3px 3px #c6dafb;
 }
 
-.googleBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.exbcSnsBtn:active {
+  background-color: #EEE;
 }
 
-.googleBtn svg {
+.iconCover {
+  width: 34px;
+  height: 34px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   flex-shrink: 0;
-  margin-left: 8px;
 }
 
-/* ========================
-   Links
-======================== */
-.linkList {
+.classiIconCover {
+  width: 100px !important;
+}
+
+.exbcSnsBtnClassi {
+  height: 46px;
+}
+
+.iconText {
+  font-family: 'Roboto', Arial, sans-serif !important;
+  font-weight: 700;
+  font-size: 14px !important;
+  margin-left: 16px;
+  color: #666;
+}
+
+/* ============================================================
+   初期登録案内 .formNote02
+============================================================ */
+.formNote02 {
+  margin-bottom: 16px;
+}
+
+.note {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================================
+   リンクリスト .formList05
+============================================================ */
+.formList05 {
   list-style: none;
-  margin-bottom: 20px;
+  padding: 0;
+  margin: 0 0 20px;
 }
 
-.linkList li {
+.formList05 li {
   margin-bottom: 6px;
+  padding-left: 10px;
+  position: relative;
 }
 
-.linkList li a {
+.formList05 li::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  color: #0092d7;
+  font-size: 9px;
+  top: 4px;
+}
+
+.formList05 li a {
   font-size: 13px;
   color: #0092d7;
+  text-decoration: none;
 }
 
-/* Note text */
-.noteList {
+.formList05 li a:hover {
+  text-decoration: underline;
+  color: #38a9df;
+}
+
+/* ============================================================
+   注意事項 .formNote03
+============================================================ */
+.formNote03 {
   list-style: none;
-  margin-bottom: 20px;
+  padding: 0;
+  margin: 0 0 20px;
 }
 
-.noteList li {
-  font-size: 12px;
+.formNote03 li {
+  font-size: 11px;
   color: #555;
-  margin-bottom: 6px;
-  line-height: 1.6;
+  line-height: 1.7;
+  margin-bottom: 4px;
 }
 
-/* Foot menu */
+/* ============================================================
+   フッターメニュー
+============================================================ */
 .footMenu {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #ddd;
   padding-top: 16px;
-  text-align: center;
-  font-size: 13px;
+  margin-top: 10px;
 }
 
-/* ========================
-   Footer
-======================== */
-.footer {
+.footMenuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.footMenuList li a {
+  font-size: 13px;
+  color: #0092d7;
+  text-decoration: none;
+}
+
+.footMenuList li a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   footer (benesse-s-footer 相当)
+============================================================ */
+.benesseFooter {
   background-color: #fff;
   border-top: 1px solid #ddd;
-  padding: 16px 20px;
 }
 
-.footerInner {
-  max-width: 760px;
+.benesseFooterInner {
+  max-width: 980px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  padding: 12px 10px;
 }
 
-.footerLogo {
-  font-size: 13px;
-  font-weight: bold;
-  color: #333;
-}
-
-.footerLinks {
-  list-style: none;
+.benesseFooterUpper {
   display: flex;
-  gap: 16px;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
 }
 
-.footerLinks li a {
-  font-size: 11px;
-  color: #555;
+.benesseFooterLogo {
+  display: inline-block;
+  text-decoration: none;
+  flex-shrink: 0;
 }
 
-.copyright {
-  font-size: 11px;
-  color: #888;
+.benesseFooterList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-/* ========================
-   Responsive
-======================== */
-@media screen and (max-width: 600px) {
+.benesseFooterList li a {
+  font-size: 11px;
+  color: #333;
+  text-decoration: none;
+}
+
+.benesseFooterList li a:hover {
+  text-decoration: underline;
+}
+
+.benesseFooterCopyright {
+  font-size: 11px;
+  color: #666;
+  display: block;
+}
+
+/* ============================================================
+   レスポンシブ (max-width: 705px)
+============================================================ */
+@media screen and (max-width: 705px) {
+  .contBoxWrap {
+    padding: 0;
+  }
+
   .contBox {
-    padding: 20px 16px 24px;
     border: none;
-    border-radius: 0;
+    padding: 16px 14px 24px;
   }
 
-  .main {
-    padding: 0 0 32px;
+  .loginId,
+  .loginPass {
+    max-width: 100%;
   }
 
-  .loginBtn {
+  .exbcSnsBtn {
     width: 100%;
+    max-width: 280px;
   }
 
-  .footerLinks {
+  .benesseFooterUpper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .benesseFooterList {
     flex-direction: column;
     gap: 6px;
   }
