@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/LoginForm";
 
 export const metadata = {
-  title: "蛟龍祭 ログイン画面｜第60回蛟龍祭 実行委員会",
+  title: "蛟龍祭クラス企画評価",
 };
 
 export default async function LoginPage({
@@ -16,15 +16,10 @@ export default async function LoginPage({
   const session = await getServerSession(authOptions);
   if (session) redirect("/member");
 
-  const hasGoogle = !!(
-    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-  );
-
   return (
     <LoginForm
       error={params.error}
       callbackUrl={params.callbackUrl ?? "/member"}
-      hasGoogle={hasGoogle}
     />
   );
 }
