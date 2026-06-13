@@ -96,7 +96,7 @@ export function PrivacyPage() {
         </Section>
 
         <p className={styles.closing}>以上</p>
-        <p className={styles.date}>（2024年06月）</p>
+        <p className={styles.date}>（2026年06月）</p>
       </div>
     </KoryoLayout>
   );
