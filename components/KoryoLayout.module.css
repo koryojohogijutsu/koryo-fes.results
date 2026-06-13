@@ -31,9 +31,15 @@
   justify-content: center;
   text-decoration: none;
   color: inherit;
-  height: 65px;
-  padding-left: 40px;
+  height: auto;
   align-self: flex-end;
+}
+
+.headerLogoImg {
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .headerLogoText {
@@ -44,8 +50,36 @@
   margin-left: 5px;
 }
 
-/* クラス企画評価 タイトルブロック */
-.headerTitleBlock {
+/* 右ブロック: クラス企画評価 + ログイン(等) を横並びに */
+.headerRight {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  margin-left: 20px;
+}
+
+/* クラス企画評価 リンク（画像 + テキスト、下揃え） */
+.headerTitleLink {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  text-decoration: none;
+  color: inherit;
+  height: 65px;
+  padding-left: 40px;
+}
+
+.headerTitleImg {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* サブタイトル（ログイン等）の列。タイトルの右側に下揃えで配置 */
+.headerSubtitleCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -61,15 +95,6 @@
   color: #8cd15c;
   margin-bottom: 4px;
   line-height: 1.4;
-}
-
-.headerTitleLink {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  text-decoration: none;
-  color: inherit;
-  height: 65px;
 }
 
 .headerTitleText {
@@ -130,6 +155,13 @@
   align-items: center;
   text-decoration: none;
   color: inherit;
+}
+
+.footerLogoImg {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .footerLogoText {
@@ -201,12 +233,20 @@
     height: auto;
   }
   .headerLogo {
-    padding-left: 0;
     height: auto;
   }
-  .headerTitleBlock {
+  .headerRight {
     margin-left: 0;
     height: auto;
+    flex-wrap: wrap;
+  }
+  .headerTitleLink {
+    padding-left: 0;
+  }
+  .headerSubtitleCol {
+    height: auto;
+    margin-left: 12px;
+    justify-content: center;
   }
   .footer {
     padding: 16px 16px 0 16px;
