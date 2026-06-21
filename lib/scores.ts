@@ -1,28 +1,26 @@
-import { supabase, isSupabaseConfigured } from "./supabase";
+import { supabaseAdmin, isSupabaseAdminConfigured } from "./supabaseAdmin";
 
 /**
  * 評価データの取得ロジック
  * --------------------------------------------------------------
- * 想定テーブル構成（Supabaseに作成する場合の例）:
+ * supabase/schema.sql で作成した scores テーブルを参照します。
  *
  *   table: scores
  *     id            uuid (PK)
  *     from_class_id text   -- 評価した側のクラス
  *     to_class_id   text   -- 評価された側のクラス（自分のクラス宛）
- *     score         numeric
+ *     score         numeric(3,1)
  *     comment       text
  *     created_at    timestamptz
  *
- * 今はテーブル未作成のため、Supabase未設定 or 取得失敗時は
- * ダミーデータにフォールバックします。
- * Supabaseのテーブルが用意でき次第、下の getScoresForClass() の
- * 中身だけ差し替えれば、呼び出し側（/memberページ）は変更不要です。
+ * Supabase未設定 or 取得失敗時はダミーデータにフォールバックします。
+ * （開発中の画面確認用）
  */
 
 export interface ScoreEntry {
   id: string;
   fromClassId: string;
-  score: number; // 1.0 〜 5.0 等、運用に合わせて調整
+  score: number; // 0.0 〜 5.0
   comment: string;
   createdAt: string;
 }
@@ -61,13 +59,13 @@ function buildSummaryFromEntries(classId: string, entries: ScoreEntry[]): ClassS
 
 /**
  * 指定クラス宛の評価結果サマリーを取得する。
- * Supabaseが設定されていればそちらから取得し、
+ * Supabase(Service Role)が設定されていればそちらから取得し、
  * 失敗時・未設定時はダミーデータを返す。
  */
 export async function getScoresForClass(classId: string): Promise<ClassScoreSummary> {
-  if (isSupabaseConfigured() && supabase) {
+  if (isSupabaseAdminConfigured() && supabaseAdmin) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from("scores")
         .select("id, from_class_id, score, comment, created_at")
         .eq("to_class_id", classId)
