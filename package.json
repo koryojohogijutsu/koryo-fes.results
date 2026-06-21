@@ -13,7 +13,8 @@
     "next-auth": "^4.24.10",
     "react": "^19",
     "react-dom": "^19",
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "@supabase/supabase-js": "^2.45.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
