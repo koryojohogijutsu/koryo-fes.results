@@ -21,7 +21,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
           className={styles.headerLogo}
         >
           <Image
-            src="/images/koryo-logo.png"
+            src="/icon.png"
             alt="Koryo-fes"
             width={25}
             height={25}
@@ -35,7 +35,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
         <div className={styles.headerRight}>
           <Link href="/login" className={styles.headerTitleLink}>
             <Image
-              src="/images/koryo-trophy.png"
+              src="/icon.png"
               alt=""
               width={40}
               height={40}
@@ -70,7 +70,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
             className={styles.footerLogo}
           >
             <Image
-              src="/images/koryo-logo.png"
+              src="/icon.png"
               alt="Koryo-fes"
               width={40}
               height={40}
