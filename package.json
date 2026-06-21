@@ -1,12 +1,13 @@
 {
-  "name": "manavision-login",
+  "name": "kos-classresults-login",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "create-accounts": "tsx scripts/createAccounts.ts"
   },
   "dependencies": {
     "next": "15.3.8",
@@ -21,6 +22,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5"
+    "typescript": "^5",
+    "tsx": "^4.19.2",
+    "dotenv": "^16.4.5"
   }
 }
