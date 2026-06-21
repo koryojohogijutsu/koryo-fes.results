@@ -58,16 +58,19 @@ export function LoginForm({ error, callbackUrl }: Props) {
 
           {/* ログインID */}
           <div className={styles.field}>
-            <label htmlFor="loginId" className={styles.label}>
-              ログインID
-            </label>
+            <div className={styles.labelRow}>
+              <span className={styles.labelBar} />
+              <label htmlFor="loginId" className={styles.label}>
+                ログインID
+              </label>
+            </div>
             <input
               id="loginId"
               type="text"
               value={loginId}
               onChange={(e) => setLoginId(e.target.value)}
               className={styles.input}
-              placeholder="ログインIDを入力"
+              placeholder="KORYO0123456789 または ぐんまスクールネットのメールアドレス"
               autoComplete="username"
               disabled={loading}
             />
@@ -75,16 +78,19 @@ export function LoginForm({ error, callbackUrl }: Props) {
 
           {/* パスワード */}
           <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>
-              パスワード
-            </label>
+            <div className={styles.labelRow}>
+              <span className={styles.labelBar} />
+              <label htmlFor="password" className={styles.label}>
+                パスワード
+              </label>
+            </div>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={styles.input}
-              placeholder="パスワードを入力"
+              placeholder="【クラス企画評価】に記載されているパスワード"
               autoComplete="current-password"
               disabled={loading}
             />
@@ -101,8 +107,9 @@ export function LoginForm({ error, callbackUrl }: Props) {
 
           {/* パスワードを忘れた方 */}
           <div className={styles.forgotWrap}>
+            <span className={styles.forgotArrow}>➡</span>
             <Link href="/forgetPassword" className={styles.forgotLink}>
-              パスワードを忘れた方
+              パスワードを忘れた方はこちら
             </Link>
           </div>
 
