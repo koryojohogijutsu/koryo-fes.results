@@ -109,6 +109,82 @@
   font-weight: 400;
 }
 
+.classBadgeRank {
+  margin-left: auto;
+  font-family: "Lato", "Noto Sans JP", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2551e;
+  background-color: #fff0ea;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+/* ランキングリスト */
+.rankList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rankItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 4px;
+}
+
+.rankItem:nth-child(odd) {
+  background-color: #fafafa;
+}
+
+.rankItemSelf {
+  background-color: #f0f9ea !important;
+  border: 1px solid #8cd15c;
+}
+
+.rankNumber {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: #888;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rankClassName {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  color: #000000;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rankSelfTag {
+  font-family: "Lato", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #8cd15c;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.rankScore {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2551e;
+  flex-shrink: 0;
+}
+
 /* サマリーカード */
 .summaryGrid {
   display: grid;
