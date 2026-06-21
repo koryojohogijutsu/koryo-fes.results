@@ -1,7 +1,9 @@
 /*
-  元HTML: カード 700px × 500px, margin:20px 0, padding:20px 40px 0 40px
-          background:#FFFFFF, box-shadow: 1px 1px 5px rgba(0,0,0,0.2)
-  ※ ヘッダー・フッターは KoryoLayout.module.css に移動
+  元HTML(iframe内フォーム): スクリーンショットから再現
+  - ラベル: 左に緑バー(#8cd15c) + 黒文字
+  - 入力欄: 背景#EEEEEE（グレー）、枠線なし、角丸なし、padding大きめ
+  - ボタン: #e2551e（オレンジ）、pill形状（border-radius大）
+  - パスワードを忘れた方: 矢印 + 下線リンク
 */
 
 /* メインカード */
@@ -12,7 +14,7 @@
   max-width: 100%;
   min-height: 500px;
   margin: 20px 0;
-  padding: 20px 40px 0 40px;
+  padding: 40px 50px;
   display: flex;
   flex-direction: column;
 }
@@ -21,44 +23,63 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px 0;
+  gap: 28px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+}
+
+/* ラベル（緑バー + テキスト） */
+.labelRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.labelBar {
+  display: inline-block;
+  width: 4px;
+  height: 22px;
+  background-color: #8cd15c;
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .label {
   font-family: "Noto Sans JP", sans-serif;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 700;
   color: #000000;
 }
 
+/* 入力欄 */
 .input {
   width: 100%;
-  max-width: 400px;
-  padding: 8px 10px;
-  border: 1px solid #aaa;
+  background-color: #EEEEEE;
+  border: none;
   border-radius: 2px;
-  font-size: 14px;
+  padding: 14px 18px;
+  font-size: 15px;
   color: #333;
-  background-color: #fff;
-  font-family: inherit;
+  font-family: "Noto Sans JP", sans-serif;
   outline: none;
-  transition: border-color 0.15s;
+  transition: background-color 0.15s;
+}
+
+.input::placeholder {
+  color: #999999;
 }
 
 .input:focus {
-  border-color: #8cd15c;
-  box-shadow: 0 0 3px rgba(140, 209, 92, 0.4);
+  background-color: #e4e4e4;
+  box-shadow: 0 0 0 2px rgba(140, 209, 92, 0.5);
 }
 
 .input:disabled {
-  background-color: #f5f5f5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -76,17 +97,17 @@
   margin: 0;
 }
 
-/* ログインボタン */
+/* ログインボタン（オレンジ・pill） */
 .submitBtn {
-  width: fit-content;
-  min-width: 140px;
-  background-color: #8cd15c;
+  width: 100%;
+  background-color: #e2551e;
   color: #ffffff;
   border: none;
-  border-radius: 3px;
-  padding: 10px 40px;
-  font-size: 15px;
+  border-radius: 30px;
+  height: 60px;
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: 0.1em;
   cursor: pointer;
   font-family: "Lato", "Noto Sans JP", sans-serif;
   transition: background-color 0.15s;
@@ -94,7 +115,7 @@
 }
 
 .submitBtn:hover:not(:disabled) {
-  background-color: #78be47;
+  background-color: #c94918;
 }
 
 .submitBtn:disabled {
@@ -102,21 +123,28 @@
   cursor: not-allowed;
 }
 
-/* パスワードを忘れた方リンク */
+/* パスワードを忘れた方 */
 .forgotWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 4px;
+}
+
+.forgotArrow {
+  font-size: 14px;
+  color: #000000;
 }
 
 .forgotLink {
   font-family: "Noto Sans JP", sans-serif;
-  font-size: 13px;
-  color: #3983ea;
-  text-decoration: none;
+  font-size: 15px;
+  color: #551A8B;
+  text-decoration: underline;
 }
 
 .forgotLink:hover {
-  text-decoration: underline;
-  color: #1a66cc;
+  color: #3983ea;
 }
 
 /* ============================================================
@@ -126,12 +154,22 @@
   .card {
     width: 100%;
     margin: 0;
-    padding: 16px;
+    padding: 24px 20px;
     min-height: auto;
     box-shadow: none;
   }
 
+  .label {
+    font-size: 16px;
+  }
+
   .input {
-    max-width: 100%;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .submitBtn {
+    font-size: 18px;
+    height: 50px;
   }
 }
