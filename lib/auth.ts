@@ -1,30 +1,26 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
+import { supabaseAdmin, isSupabaseAdminConfigured } from "./supabaseAdmin";
 
 /**
  * ログインID/パスワード/クラスの管理について
  * --------------------------------------------------------------
- * 環境変数 AUTH_USERS に
- *   「ログインID:パスワード:表示名:classId」
- * をカンマ区切りで設定することでユーザーを管理します。
+ * 【優先1】Supabase (accounts テーブル)
+ *   supabase/schema.sql で作成した accounts テーブルから認証します。
+ *   パスワードは bcrypt でハッシュ化して保存されている前提です。
+ *   必要な環境変数: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ *
+ * 【優先2】環境変数 AUTH_USERS（Supabase未設定時のフォールバック）
+ *   「ログインID:パスワード:表示名:classId」をカンマ区切りで指定。
+ *   例:
+ *     AUTH_USERS=admin:changeme:管理者:admin,1-1:abcd1234:1年1組:1-1
+ *
+ * 【優先3】DEMO_USERS（どちらも未設定の場合の開発用フォールバック）
  *
  * classId は /member ページでどのクラスの集計を表示するかを
- * 判別するためのキーです（例: "1-1", "1-2", "admin" など）。
- * 管理者アカウントの場合は classId を "admin" にしておくと、
- * 将来的に全クラス閲覧などの分岐がしやすくなります。
- *
- * 例 (.env.local / Vercelの環境変数):
- *   AUTH_USERS=admin:changeme:管理者:admin,1-1:abcd1234:1年1組:1-1,1-2:efgh5678:1年2組:1-2
- *
- * メリット: コードを書き換えずに本番(Vercel)の環境変数だけで
- *           ID/パスワード/クラスの追加・変更・削除ができる。
- * 注意点  : クラス数・ユーザー数が多い場合や、パスワードを
- *           ユーザー自身が変更できるようにしたい場合は、
- *           Supabase などのDBに切り替えることを推奨します
- *           （lib/supabase.ts を参照、将来の移行先として用意済み）。
- *
- * 環境変数が未設定の場合は、開発用の DEMO_USERS にフォールバックします。
+ * 判別するためのキーです。
  */
 
 export interface AuthUser {
@@ -52,18 +48,60 @@ function loadUsersFromEnv(): AuthUser[] | null {
         loginId,
         password,
         name: name || loginId,
-        classId: classId || loginId, // classId省略時はloginIdを流用
+        classId: classId || loginId,
       };
     })
     .filter((u) => u.loginId && u.password);
 }
 
-// 開発用フォールバック（AUTH_USERS未設定時のみ使用）
+// 開発用フォールバック（Supabase・AUTH_USERSどちらも未設定の場合のみ使用）
 const DEMO_USERS: AuthUser[] = [
   { id: "1", loginId: "admin", password: "password123", name: "管理者", classId: "admin" },
   { id: "2", loginId: "1-1", password: "password123", name: "1年1組", classId: "1-1" },
   { id: "3", loginId: "1-2", password: "password123", name: "1年2組", classId: "1-2" },
 ];
+
+/**
+ * Supabaseのaccountsテーブルを使った認証
+ * 戻り値: 認証成功時はユーザー情報、失敗時はnull
+ */
+async function authorizeWithSupabase(loginId: string, password: string) {
+  if (!isSupabaseAdminConfigured() || !supabaseAdmin) return null;
+
+  const { data, error } = await supabaseAdmin
+    .from("accounts")
+    .select("id, login_id, password_hash, class_id, display_name")
+    .eq("login_id", loginId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  const isValid = await bcrypt.compare(password, data.password_hash);
+  if (!isValid) return null;
+
+  return {
+    id: data.id,
+    name: data.display_name,
+    email: data.login_id,
+    classId: data.class_id,
+  };
+}
+
+/**
+ * 環境変数(AUTH_USERS) or デモユーザーを使った認証（フォールバック）
+ */
+function authorizeWithEnv(loginId: string, password: string) {
+  const users = loadUsersFromEnv() ?? DEMO_USERS;
+  const user = users.find((u) => u.loginId === loginId && u.password === password);
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.loginId,
+    classId: user.classId,
+  };
+}
 
 const providers: NextAuthOptions["providers"] = [
   CredentialsProvider({
@@ -75,18 +113,20 @@ const providers: NextAuthOptions["providers"] = [
     async authorize(credentials) {
       if (!credentials?.loginId || !credentials?.password) return null;
 
-      const users = loadUsersFromEnv() ?? DEMO_USERS;
-      const user = users.find(
-        (u) => u.loginId === credentials.loginId && u.password === credentials.password
-      );
-      if (!user) return null;
+      // Supabaseが設定されていればそちらを優先
+      if (isSupabaseAdminConfigured()) {
+        const supabaseUser = await authorizeWithSupabase(
+          credentials.loginId,
+          credentials.password
+        );
+        if (supabaseUser) return supabaseUser;
+        // Supabaseで見つからない場合はそのまま失敗扱い
+        // （Supabase設定済みなら環境変数にはフォールバックしない）
+        return null;
+      }
 
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.loginId,
-        classId: user.classId,
-      };
+      // Supabase未設定時のみ環境変数/デモユーザーにフォールバック
+      return authorizeWithEnv(credentials.loginId, credentials.password);
     },
   }),
 ];
