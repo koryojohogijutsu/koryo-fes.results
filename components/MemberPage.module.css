@@ -75,30 +75,166 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 48px 16px;
 }
 
-.placeholder {
-  background-color: #FFFFFF;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+.contentWrap {
   width: 700px;
   max-width: 100%;
-  padding: 60px 40px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.placeholderText {
-  font-family: "Kosugi Maru", sans-serif;
-  font-size: 18px;
-  color: #000000;
-  margin-bottom: 12px;
+/* クラスバッジ */
+.classBadge {
+  background-color: #FFFFFF;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.placeholderSub {
+.classBadgeLabel {
   font-family: "Noto Sans JP", sans-serif;
   font-size: 13px;
   color: #888;
+}
+
+.classBadgeValue {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 22px;
+  color: #8cd15c;
+  font-weight: 400;
+}
+
+/* サマリーカード */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.summaryCard {
+  background-color: #FFFFFF;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  padding: 20px 24px;
+  text-align: center;
+}
+
+.summaryLabel {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.summaryValue {
+  font-family: "Lato", sans-serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.summaryUnit {
+  font-size: 16px;
+  font-weight: 400;
+  color: #888;
+  margin-left: 4px;
+}
+
+/* 評価一覧 */
+.listSection {
+  background-color: #FFFFFF;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+}
+
+.listTitle {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #8cd15c;
+}
+
+.emptyState {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.emptyText {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  color: #999;
+}
+
+.entryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.entryItem {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.entryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.entryFrom {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #555;
+}
+
+.entryScore {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #8cd15c;
+}
+
+.entryComment {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  color: #000000;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.entryDate {
+  font-family: "Lato", sans-serif;
+  font-size: 11px;
+  color: #aaa;
+}
+
+/* ============================================================
+   レスポンシブ
+============================================================ */
+@media screen and (max-width: 640px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    padding: 0 16px;
+  }
+  .userName {
+    display: none;
+  }
 }
 
 /* フッター */
