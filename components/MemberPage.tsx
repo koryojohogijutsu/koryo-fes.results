@@ -1,11 +1,17 @@
 import { Session } from "next-auth";
 import { getScoresForClass } from "@/lib/scores";
+import { getClassRanking } from "@/lib/ranking";
 import { LogoutButton } from "./LogoutButton";
 import styles from "./MemberPage.module.css";
 
 export async function MemberPage({ session }: { session: Session }) {
   const classId = session.user?.classId ?? "";
-  const summary = await getScoresForClass(classId);
+  const [summary, ranking] = await Promise.all([
+    getScoresForClass(classId),
+    getClassRanking(),
+  ]);
+
+  const myRank = ranking.find((r) => r.classId === classId);
 
   return (
     <div className={styles.page}>
@@ -35,6 +41,11 @@ export async function MemberPage({ session }: { session: Session }) {
           <div className={styles.classBadge}>
             <span className={styles.classBadgeLabel}>あなたのクラス</span>
             <span className={styles.classBadgeValue}>{classId || "未設定"}</span>
+            {myRank && (
+              <span className={styles.classBadgeRank}>
+                全体 {myRank.rank}位 / {ranking.length}クラス中
+              </span>
+            )}
           </div>
 
           {/* サマリーカード */}
@@ -54,6 +65,32 @@ export async function MemberPage({ session }: { session: Session }) {
               </p>
             </div>
           </div>
+
+          {/* 全クラスランキング */}
+          <section className={styles.listSection}>
+            <h2 className={styles.listTitle}>全クラスランキング</h2>
+            <ul className={styles.rankList}>
+              {ranking.map((r) => (
+                <li
+                  key={r.classId}
+                  className={`${styles.rankItem} ${
+                    r.classId === classId ? styles.rankItemSelf : ""
+                  }`}
+                >
+                  <span className={styles.rankNumber}>{r.rank}</span>
+                  <span className={styles.rankClassName}>
+                    {r.className}
+                    {r.classId === classId && (
+                      <span className={styles.rankSelfTag}>あなた</span>
+                    )}
+                  </span>
+                  <span className={styles.rankScore}>
+                    {r.totalCount > 0 ? r.averageScore.toFixed(1) : "—"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
 
           {/* 評価一覧 */}
           <section className={styles.listSection}>
