@@ -16,21 +16,17 @@ function attachRanks(entries: Omit<ClassRankingEntry,"rank">[]): ClassRankingEnt
 export async function getClassRanking(): Promise<ClassRankingEntry[]> {
   if (isSupabaseAdminConfigured() && supabaseAdmin) {
     try {
-      const { data:classes, error:classesError } = await supabaseAdmin
-        .from("koryo_classes").select("id, name").neq("id","admin");
-      if (classesError || !classes) throw classesError;
-
-      const { data:scores, error:scoresError } = await supabaseAdmin
-        .from("koryo_scores").select("to_class_id, score");
-      if (scoresError) throw scoresError;
-
+      const { data:classes, error:ce } = await supabaseAdmin.from("koryo_classes").select("id,name").neq("id","admin");
+      if (ce || !classes) throw ce;
+      const { data:scores, error:se } = await supabaseAdmin.from("koryo_scores").select("to_class_id,score");
+      if (se) throw se;
       return attachRanks(classes.map(c => {
         const cs = (scores??[]).filter(s=>s.to_class_id===c.id);
         const totalCount = cs.length;
         const averageScore = totalCount===0 ? 0 : Math.round(cs.reduce((s,e)=>s+Number(e.score),0)/totalCount*10)/10;
         return { classId:c.id, className:c.name, averageScore, totalCount };
       }));
-    } catch { /* フォールバック */ }
+    } catch { /* fallback */ }
   }
   return attachRanks(DUMMY_RANKING);
 }
