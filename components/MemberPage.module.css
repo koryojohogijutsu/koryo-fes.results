@@ -1,327 +1,337 @@
+/* ============================================================
+   ページ全体
+============================================================ */
 .page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #EEEEEE;
+  font-family: "Noto Sans JP", sans-serif;
 }
 
-/* ヘッダー */
+/* ============================================================
+   ヘッダー
+============================================================ */
 .header {
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #ddd;
-  padding: 0 40px;
-  height: 64px;
+  background: #FFFFFF;
+  border-bottom: 3px solid #8cd15c;
+  height: 56px;
   flex-shrink: 0;
 }
-
 .headerInner {
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   max-width: 1100px;
   margin: 0 auto;
-  width: 100%;
-}
-
-.headerLeft {
+  height: 100%;
+  padding: 0 24px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
 }
-
-.headerTitle {
+.headerSiteName {
   font-family: "Kosugi Maru", sans-serif;
   font-size: 20px;
-  font-weight: 400;
-  color: #000000;
+  color: #000;
 }
-
-.green {
-  color: #8cd15c;
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.userName {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 13px;
-  color: #555;
-}
-
+.green { color: #8cd15c; }
+.headerRight { display: flex; align-items: center; gap: 16px; }
+.userName { font-size: 13px; color: #555; }
 .logoutBtn {
-  background-color: #8cd15c;
-  color: #ffffff;
+  background: #8cd15c;
+  color: #fff;
   border: none;
   border-radius: 3px;
   padding: 6px 16px;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  font-family: "Lato", "Noto Sans JP", sans-serif;
-  transition: background-color 0.15s;
+  font-family: inherit;
+  transition: background 0.15s;
 }
+.logoutBtn:hover { background: #78be47; }
 
-.logoutBtn:hover {
-  background-color: #78be47;
-}
+/* ============================================================
+   メイン
+============================================================ */
+.main { flex: 1; padding: 0; }
+.inner { max-width: 1100px; margin: 0 auto; padding: 16px 24px 48px; }
 
-/* メイン */
-.main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 48px 16px;
-}
+/* パンくず */
+.breadcrumb { font-size: 13px; color: #555; margin-bottom: 16px; }
+.breadSep { margin: 0 6px; }
 
-.contentWrap {
-  width: 700px;
-  max-width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
+/* 2カラムレイアウト */
+.layout { display: flex; gap: 20px; align-items: flex-start; }
 
-/* クラスバッジ */
-.classBadge {
-  background-color: #FFFFFF;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.classBadgeLabel {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 13px;
-  color: #888;
-}
-
-.classBadgeValue {
-  font-family: "Kosugi Maru", sans-serif;
-  font-size: 22px;
-  color: #8cd15c;
-  font-weight: 400;
-}
-
-.classBadgeRank {
-  margin-left: auto;
-  font-family: "Lato", "Noto Sans JP", sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: #e2551e;
-  background-color: #fff0ea;
-  padding: 4px 12px;
-  border-radius: 12px;
-}
-
-/* ランキングリスト */
-.rankList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.rankItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 4px;
-}
-
-.rankItem:nth-child(odd) {
-  background-color: #fafafa;
-}
-
-.rankItemSelf {
-  background-color: #f0f9ea !important;
-  border: 1px solid #8cd15c;
-}
-
-.rankNumber {
-  font-family: "Lato", sans-serif;
-  font-size: 14px;
-  font-weight: 900;
-  color: #888;
-  width: 24px;
-  text-align: center;
+/* ============================================================
+   サイドバー
+============================================================ */
+.sidebar {
+  width: 200px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
+.sideClassBox, .sideRankBox {
+  background: #fff;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.sideLbl { font-size: 11px; color: #888; margin-bottom: 4px; }
+.sideClassName { font-family: "Kosugi Maru", sans-serif; font-size: 18px; color: #8cd15c; }
+.sideRankNum { font-family: "Lato", sans-serif; font-size: 28px; font-weight: 900; color: #000; line-height: 1.1; }
+.sideRankNum em { font-size: 36px; }
+.sideRankOf { font-size: 11px; color: #888; margin-top: 2px; }
+.sidenav { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.sidenavTtl { font-size: 12px; font-weight: 700; color: #fff; background: #8cd15c; padding: 8px 12px; }
+.sidenav ul { list-style: none; padding: 0; margin: 0; }
+.sidenavLink {
+  display: block;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.1s;
+}
+.sidenavLink:hover { background: #f5f5f5; color: #8cd15c; }
 
-.rankClassName {
-  font-family: "Noto Sans JP", sans-serif;
+/* ============================================================
+   コンテンツエリア
+============================================================ */
+.content { flex: 1; min-width: 0; }
+
+/* タブバー */
+.tabBar {
+  display: flex;
+  border-bottom: 2px solid #8cd15c;
+  margin-bottom: 0;
+}
+.tab {
+  padding: 10px 20px;
   font-size: 14px;
-  color: #000000;
-  flex: 1;
+  font-weight: 700;
+  color: #555;
+  text-decoration: none;
+  border-radius: 4px 4px 0 0;
+  transition: background 0.1s, color 0.1s;
+}
+.tab:hover { background: #e8f8d8; color: #5aaa20; }
+
+/* セクション共通 */
+.section {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-top: 0;
+  padding: 0;
+  margin-bottom: 20px;
+}
+.sectionHead {
+  padding: 14px 20px;
+  border-bottom: 1px solid #eee;
+}
+.sectionTtl {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  color: #000;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-.rankSelfTag {
-  font-family: "Lato", sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  color: #ffffff;
-  background-color: #8cd15c;
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-
-.rankScore {
-  font-family: "Lato", sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: #e2551e;
+.sectionTtl::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: #8cd15c;
   flex-shrink: 0;
 }
 
-/* サマリーカード */
-.summaryGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.summaryCard {
-  background-color: #FFFFFF;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-  padding: 20px 24px;
-  text-align: center;
-}
-
-.summaryLabel {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 13px;
-  color: #888;
-  margin-bottom: 8px;
-}
-
-.summaryValue {
-  font-family: "Lato", sans-serif;
-  font-size: 36px;
-  font-weight: 900;
-  color: #000000;
-}
-
-.summaryUnit {
-  font-size: 16px;
-  font-weight: 400;
-  color: #888;
-  margin-left: 4px;
-}
-
-/* 評価一覧 */
-.listSection {
-  background-color: #FFFFFF;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-  padding: 24px;
-}
-
-.listTitle {
-  font-family: "Kosugi Maru", sans-serif;
-  font-size: 18px;
-  font-weight: 400;
-  color: #000000;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #8cd15c;
-}
-
-.emptyState {
-  padding: 40px 0;
-  text-align: center;
-}
-
-.emptyText {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 14px;
-  color: #999;
-}
-
-.entryList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* ============================================================
+   ダイジェスト
+============================================================ */
+.digestGrid {
   display: flex;
-  flex-direction: column;
   gap: 16px;
+  padding: 20px;
+  flex-wrap: wrap;
 }
-
-.entryItem {
+.digestCard {
+  background: #f9f9f9;
   border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 16px;
+  padding: 16px 20px;
+  min-width: 160px;
+  flex: 1;
+}
+.digestLbl { font-size: 12px; color: #888; margin-bottom: 8px; }
+.digestScoreWrap { display: flex; align-items: baseline; gap: 4px; }
+.digestScoreBig { font-family: "Lato", sans-serif; font-size: 40px; font-weight: 900; color: #000; font-style: normal; }
+.digestScoreUnit { font-size: 14px; color: #888; }
+.bar { height: 6px; background: #eee; border-radius: 3px; margin-top: 10px; }
+.barFill { height: 100%; background: #8cd15c; border-radius: 3px; transition: width 0.5s; }
+.digestSub { font-size: 12px; color: #888; margin-top: 6px; }
+
+/* ミニランキング */
+.miniRanking { padding: 0 20px 20px; }
+.miniRankTtl { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px; }
+.miniRankList { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.miniRankItem {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 3px;
+}
+.miniRankItemSelf { background: #f0f9ea; border-color: #8cd15c; }
+.miniRankPos { font-family: "Lato", sans-serif; font-weight: 900; font-size: 14px; color: #888; width: 20px; text-align: center; }
+.miniRankName { flex: 1; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.miniRankScore { font-family: "Lato", sans-serif; font-weight: 700; font-size: 14px; color: #e2551e; }
+.miniRankMore { display: inline-block; margin-top: 10px; font-size: 13px; color: #8cd15c; text-decoration: none; }
+.miniRankMore:hover { text-decoration: underline; }
+.selfTag {
+  display: inline-block;
+  background: #8cd15c; color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 7px; border-radius: 10px;
 }
 
-.entryHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.entryFrom {
-  font-family: "Noto Sans JP", sans-serif;
+/* ============================================================
+   成績結果テーブル（マナビジョン風）
+============================================================ */
+.scoreTableWrap { overflow-x: auto; padding: 20px; }
+.scoreTable {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 13px;
+  min-width: 500px;
+}
+.scoreTh {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
   font-weight: 700;
-  color: #555;
+  text-align: center;
+  white-space: nowrap;
+  color: #333;
 }
-
-.entryScore {
-  font-family: "Lato", sans-serif;
-  font-size: 14px;
+.scoreThItem { text-align: left; min-width: 100px; }
+.scoreTd { border: 1px solid #eee; padding: 10px 12px; vertical-align: middle; }
+.scoreRow:nth-child(even) td, .scoreRow:nth-child(even) th { background: #fafafa; }
+.scoreRowTotal th, .scoreRowTotal td {
+  background: #f0f9ea !important;
   font-weight: 700;
-  color: #8cd15c;
 }
+.scoreItemName {
+  font-weight: 700; color: #333;
+  border-left: 4px solid #8cd15c;
+  padding-left: 10px;
+}
+.scoreItemNameTotal { border-left-color: #e2551e; }
+.scoreCellWrap { display: flex; align-items: baseline; gap: 4px; justify-content: center; }
+.scoreNum { font-family: "Lato", sans-serif; font-size: 18px; font-weight: 900; color: #000; }
+.scoreFull { font-size: 11px; color: #aaa; }
+.scoreAvg { font-size: 13px; color: #555; }
 
-.entryComment {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 14px;
-  color: #000000;
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
+/* スコアバー（セル内） */
+.scoreBarCell { height: 5px; background: #eee; border-radius: 3px; margin-top: 6px; position: relative; }
+.scoreBarCellFill { height: 100%; background: #8cd15c; border-radius: 3px; }
+.scoreBarCellAvg { position: absolute; top: -2px; width: 2px; height: 9px; background: #e2551e; transform: translateX(-50%); }
 
-.entryDate {
-  font-family: "Lato", sans-serif;
-  font-size: 11px;
-  color: #aaa;
+.diffPos { color: #2a9d2a; font-weight: 700; font-size: 13px; }
+.diffNeg { color: #c00; font-weight: 700; font-size: 13px; }
+
+/* 全クラスランキングテーブル */
+.rankTableSection { padding: 0 20px 20px; }
+.rankTableTtl { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+.rankTable { width: 100%; border-collapse: collapse; font-size: 13px; }
+.rankTh {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 9px 12px;
+  font-weight: 700;
+  text-align: center;
+  color: #333;
 }
+.rankTd { border: 1px solid #eee; padding: 9px 12px; text-align: center; vertical-align: middle; }
+.rankRow:nth-child(even) td { background: #fafafa; }
+.rankRowSelf td { background: #f0f9ea !important; font-weight: 700; }
+.medal {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  font-family: "Lato", sans-serif; font-weight: 900; font-size: 13px; color: #fff;
+}
+.medal1 { background: #d4a017; }
+.medal2 { background: #9e9e9e; }
+.medal3 { background: #a0522d; }
+.rankScoreWrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.rankScoreNum { font-family: "Lato", sans-serif; font-weight: 700; font-size: 15px; color: #e2551e; }
+.rankBar { width: 80px; height: 5px; background: #eee; border-radius: 3px; }
+.rankBarFill { height: 100%; background: #8cd15c; border-radius: 3px; }
+
+/* ============================================================
+   来場者からの感想（Q&A）
+============================================================ */
+.qaWrap { padding: 20px; display: flex; flex-direction: column; gap: 24px; }
+.qaBlock { border: 1px solid #e8f0d8; border-radius: 6px; overflow: hidden; }
+.qaQuestion {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: #f0f9ea; padding: 14px 16px;
+  border-bottom: 1px solid #e0efd0;
+}
+.qaQIcon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: #8cd15c; color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Lato", sans-serif; font-weight: 900; font-size: 14px;
+}
+.qaQText { font-size: 14px; font-weight: 700; color: #333; line-height: 1.5; margin: 0; padding-top: 4px; }
+.qaNoAnswer { padding: 12px 16px; font-size: 13px; color: #aaa; }
+.qaAnswerList { list-style: none; padding: 0; margin: 0; }
+.qaAnswerItem {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.qaAnswerItem:last-child { border-bottom: none; }
+.qaAIcon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: #e2551e; color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Lato", sans-serif; font-weight: 900; font-size: 14px;
+}
+.qaAnswerBody { flex: 1; }
+.qaAnswerText { font-size: 14px; color: #222; line-height: 1.6; margin: 0 0 4px; }
+.qaAnswerFrom { font-size: 11px; color: #aaa; }
+
+/* ============================================================
+   共通
+============================================================ */
+.empty { padding: 48px 20px; text-align: center; }
+.emptyTtl { font-family: "Kosugi Maru", sans-serif; font-size: 16px; color: #999; margin-bottom: 8px; }
+.emptySub { font-size: 13px; color: #bbb; }
+
+/* ============================================================
+   フッター
+============================================================ */
+.footer { background: #fff; border-top: 1px solid #eee; padding: 12px 24px; flex-shrink: 0; }
+.copyright { font-size: 12px; color: #888; }
 
 /* ============================================================
    レスポンシブ
 ============================================================ */
-@media screen and (max-width: 640px) {
-  .summaryGrid {
-    grid-template-columns: 1fr;
-  }
-  .header {
-    padding: 0 16px;
-  }
-  .userName {
-    display: none;
-  }
-}
-
-/* フッター */
-.footer {
-  background-color: #FFFFFF;
-  padding: 8px 40px;
-  flex-shrink: 0;
-}
-
-.copyright {
-  font-family: "Lato", "Noto Sans JP", sans-serif;
-  font-size: 12px;
-  color: #000000;
+@media screen and (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
+  .sideClassBox, .sideRankBox { flex: 1; min-width: 140px; }
+  .sidenav { width: 100%; }
+  .sidenav ul { display: flex; flex-wrap: wrap; }
+  .sidenavLink { border-bottom: none; border-right: 1px solid #f0f0f0; }
+  .inner { padding: 12px 12px 32px; }
+  .digestScoreBig { font-size: 28px; }
+  .userName { display: none; }
 }
