@@ -1,47 +1,25 @@
 import { supabaseAdmin, isSupabaseAdminConfigured } from "./supabaseAdmin";
 
-/**
- * 評価データの型定義
- * --------------------------------------------------------------
- * Supabase koryo_scores テーブル想定スキーマ:
- *   id            uuid PK
- *   from_class_id text  (評価したクラス)
- *   to_class_id   text  (評価されたクラス)
- *   score         numeric(3,1)  総合スコア 0〜5
- *   comment       text  自由記述コメント
- *   created_at    timestamptz
- *
- * 評価項目別・Q&A対応のため、以下カラムを追加予定:
- *   score_naiso   numeric(3,1)  内装
- *   score_settai  numeric(3,1)  接客
- *   score_kikaku  numeric(3,1)  企画
- *   score_moriagari numeric(3,1) 盛り上がり
- *   qa_answers    jsonb  { "q1": "回答文", "q2": "回答文", ... }
- *
- * 現時点ではダミーデータで表示構造を確認してください。
- * Supabaseにカラムを追加後、getScoresForClass()内のselectを更新してください。
- */
-
 export interface ScoreEntry {
   id: string;
   fromClassId: string;
-  score: number;         // 総合 0〜5
-  scoreNaiso?: number;   // 内装
-  scoreSettai?: number;  // 接客
-  scoreKikaku?: number;  // 企画
-  scoreMoriagari?: number; // 盛り上がり
+  score: number;
+  scoreNaiso?: number;
+  scoreSettai?: number;
+  scoreKikaku?: number;
+  scoreMoriagari?: number;
   comment: string;
-  qaAnswers?: Record<string, string>; // { q1: "回答", q2: "回答" }
+  qaAnswers?: Record<string, string>;
   createdAt: string;
 }
 
 export interface ItemScore {
-  label: string;       // 項目名
-  key: string;         // キー
-  myScore: number;     // 自クラスの平均
-  maxScore: number;    // 満点
-  average: number;     // 全体平均
-  rank: number;        // 全体順位
+  label: string;
+  key: string;
+  myScore: number;
+  maxScore: number;
+  average: number;
+  rank: number;
   totalClasses: number;
 }
 
@@ -53,7 +31,6 @@ export interface ClassScoreSummary {
   itemScores: ItemScore[];
 }
 
-// ── Q&A の質問定義（実際の質問文に変更してください） ──
 export const QA_QUESTIONS: { key: string; label: string }[] = [
   { key: "q1", label: "企画全体の印象はいかがでしたか？" },
   { key: "q2", label: "特に良かった点を教えてください。" },
@@ -61,7 +38,6 @@ export const QA_QUESTIONS: { key: string; label: string }[] = [
   { key: "q4", label: "また来たいと思いますか？" },
 ];
 
-// ── ダミーデータ ──
 const DUMMY_ENTRIES: Record<string, ScoreEntry[]> = {
   "1-1": [
     {
@@ -98,29 +74,38 @@ const DUMMY_ENTRIES: Record<string, ScoreEntry[]> = {
   admin: [],
 };
 
-// 全体平均（ダミー）
 const DUMMY_ALL_AVERAGES: Record<string, number> = {
   scoreNaiso: 3.8, scoreSettai: 3.9, scoreKikaku: 4.0, scoreMoriagari: 3.7,
 };
 
-const ITEM_DEFS = [
-  { label: "内装",    key: "scoreNaiso",     max: 5 },
-  { label: "接客",    key: "scoreSettai",    max: 5 },
-  { label: "企画",    key: "scoreKikaku",    max: 5 },
-  { label: "盛り上がり", key: "scoreMoriagari", max: 5 },
+const ITEM_DEFS: { label: string; key: keyof ScoreEntry; max: number }[] = [
+  { label: "内装",      key: "scoreNaiso",      max: 5 },
+  { label: "接客",      key: "scoreSettai",     max: 5 },
+  { label: "企画",      key: "scoreKikaku",     max: 5 },
+  { label: "盛り上がり", key: "scoreMoriagari",  max: 5 },
 ];
 
-function buildSummary(classId: string, entries: ScoreEntry[], allClassAverages?: Record<string, number>): ClassScoreSummary {
+function buildSummary(
+  classId: string,
+  entries: ScoreEntry[],
+  allClassAverages?: Record<string, number>
+): ClassScoreSummary {
   const totalCount = entries.length;
-  const averageScore = totalCount === 0 ? 0
-    : Math.round(entries.reduce((s, e) => s + e.score, 0) / totalCount * 10) / 10;
+  const averageScore =
+    totalCount === 0
+      ? 0
+      : Math.round((entries.reduce((s, e) => s + e.score, 0) / totalCount) * 10) / 10;
 
-  // 項目別スコア集計
   const itemScores: ItemScore[] = ITEM_DEFS.map(({ label, key, max }) => {
-    const vals = entries.map(e => (e as Record<string, number>)[key]).filter(v => v != null);
-    const myScore = vals.length === 0 ? 0 : Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10;
+    const vals = entries
+      .map(e => e[key] as number | undefined)
+      .filter((v): v is number => v != null);
+    const myScore =
+      vals.length === 0
+        ? 0
+        : Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
     const average = allClassAverages?.[key] ?? DUMMY_ALL_AVERAGES[key] ?? 0;
-    return { label, key, myScore, maxScore: max, average, rank: 0, totalClasses: 0 };
+    return { label, key: String(key), myScore, maxScore: max, average, rank: 0, totalClasses: 0 };
   });
 
   return { classId, averageScore, totalCount, entries, itemScores };
@@ -140,13 +125,13 @@ export async function getScoresForClass(classId: string): Promise<ClassScoreSumm
           id: row.id,
           fromClassId: row.from_class_id,
           score: Number(row.score),
-          scoreNaiso: row.score_naiso != null ? Number(row.score_naiso) : undefined,
-          scoreSettai: row.score_settai != null ? Number(row.score_settai) : undefined,
-          scoreKikaku: row.score_kikaku != null ? Number(row.score_kikaku) : undefined,
-          scoreMoriagari: row.score_moriagari != null ? Number(row.score_moriagari) : undefined,
-          comment: row.comment ?? "",
-          qaAnswers: row.qa_answers ?? {},
-          createdAt: row.created_at,
+          scoreNaiso:      row.score_naiso      != null ? Number(row.score_naiso)      : undefined,
+          scoreSettai:     row.score_settai     != null ? Number(row.score_settai)     : undefined,
+          scoreKikaku:     row.score_kikaku     != null ? Number(row.score_kikaku)     : undefined,
+          scoreMoriagari:  row.score_moriagari  != null ? Number(row.score_moriagari)  : undefined,
+          comment:    row.comment    ?? "",
+          qaAnswers:  row.qa_answers ?? {},
+          createdAt:  row.created_at,
         }));
         return buildSummary(classId, entries);
       }
