@@ -1,18 +1,18 @@
 import { Session } from "next-auth";
-import { getScoresForClass, QA_QUESTIONS } from "@/lib/scores";
-import { getClassRanking } from "@/lib/ranking";
+import { getClassResult, getGraphUrls, getVisitorComments } from "@/lib/results";
 import { LogoutButton } from "./LogoutButton";
+import Image from "next/image";
 import styles from "./MemberPage.module.css";
 
 export async function MemberPage({ session }: { session: Session }) {
   const classId = session.user?.classId ?? "";
   const className = session.user?.name ?? classId;
 
-  const [summary, ranking] = await Promise.all([
-    getScoresForClass(classId),
-    getClassRanking(),
+  const [result, graphs, comments] = await Promise.all([
+    getClassResult(classId),
+    getGraphUrls(classId),
+    getVisitorComments(classId),
   ]);
-  const myRank = ranking.find(r => r.classId === classId);
 
   return (
     <div className={styles.page}>
@@ -33,279 +33,182 @@ export async function MemberPage({ session }: { session: Session }) {
       <main className={styles.main}>
         <div className={styles.inner}>
 
-          {/* パンくず */}
+          {/* パンくず（「蛟龍祭クラス企画評価>」削除） */}
           <nav className={styles.breadcrumb}>
-            <span>蛟龍祭クラス企画評価</span>
-            <span className={styles.breadSep}>＞</span>
             <strong>{className} の評価結果</strong>
           </nav>
 
-          <div className={styles.layout}>
+          {/* タブバー */}
+          <div className={styles.tabBar}>
+            <a href="#seiseki" className={styles.tab}>今回の成績</a>
+            <a href="#balance" className={styles.tab}>来場者バランス</a>
+            <a href="#comments" className={styles.tab}>来場者コメント</a>
+          </div>
 
-            {/* サイドバー */}
-            <aside className={styles.sidebar}>
-              <div className={styles.sideClassBox}>
-                <p className={styles.sideLbl}>ログイン中のクラス</p>
-                <p className={styles.sideClassName}>{className}</p>
+          {/* ════ STEP1 今回の成績 ════ */}
+          <section id="seiseki" className={styles.section}>
+            <div className={styles.stepHead}>
+              <span className={styles.stepBadge}>STEP<br />1</span>
+              <div>
+                <h2 className={styles.stepTtl}>今回の成績</h2>
+                <p className={styles.stepPoint}>
+                  <span className={styles.pointLabel}>POINT</span>
+                  まずは前高全体の来場者情報で、自分のクラスの位置を確認してみよう。
+                </p>
               </div>
-              {myRank && (
-                <div className={styles.sideRankBox}>
-                  <p className={styles.sideLbl}>総合順位</p>
-                  <p className={styles.sideRankNum}><em>{myRank.rank}</em>位</p>
-                  <p className={styles.sideRankOf}>{ranking.length}クラス中</p>
+            </div>
+
+            {/* 集客力確認メッセージ */}
+            {result?.targetMessage && (
+              <div className={styles.targetBox}>
+                <span className={styles.targetIcon}>!</span>
+                <div>
+                  <p className={styles.targetLead}>集客力向上のために真っ先に力を入れてほしい来場者層は</p>
+                  <p className={styles.targetMain}>{result.targetMessage}</p>
                 </div>
-              )}
-              <nav className={styles.sidenav}>
-                <p className={styles.sidenavTtl}>評価を見る</p>
-                <ul>
-                  <li><a href="#digest"   className={styles.sidenavLink}>ダイジェスト</a></li>
-                  <li><a href="#seiseki"  className={styles.sidenavLink}>成績結果</a></li>
-                  <li><a href="#kanso"    className={styles.sidenavLink}>来場者からの感想</a></li>
-                </ul>
-              </nav>
-            </aside>
-
-            {/* コンテンツ */}
-            <div className={styles.content}>
-
-              {/* タブバー */}
-              <div className={styles.tabBar}>
-                <a href="#digest"  className={styles.tab}>ダイジェスト</a>
-                <a href="#seiseki" className={styles.tab}>成績結果</a>
-                <a href="#kanso"   className={styles.tab}>来場者からの感想</a>
               </div>
+            )}
 
-              {/* ════ ① ダイジェスト ════ */}
-              <section id="digest" className={styles.section}>
-                <div className={styles.sectionHead}>
-                  <h2 className={styles.sectionTtl}>総合結果ダイジェスト</h2>
-                </div>
-
-                <div className={styles.digestGrid}>
-                  {/* 総合スコア */}
-                  <div className={styles.digestCard}>
-                    <p className={styles.digestLbl}>平均評価スコア</p>
-                    <div className={styles.digestScoreWrap}>
-                      <em className={styles.digestScoreBig}>
-                        {summary.totalCount > 0 ? summary.averageScore.toFixed(1) : "—"}
-                      </em>
-                      <span className={styles.digestScoreUnit}>/ 5.0</span>
-                    </div>
-                    {summary.totalCount > 0 && (
-                      <div className={styles.bar}>
-                        <div className={styles.barFill} style={{ width: `${summary.averageScore / 5 * 100}%` }} />
-                      </div>
-                    )}
-                    <p className={styles.digestSub}>{summary.totalCount}件の評価</p>
-                  </div>
-
-                  {/* 順位 */}
-                  {myRank && (
-                    <div className={styles.digestCard}>
-                      <p className={styles.digestLbl}>全クラス順位</p>
-                      <div className={styles.digestScoreWrap}>
-                        <em className={styles.digestScoreBig}>{myRank.rank}</em>
-                        <span className={styles.digestScoreUnit}>位</span>
-                      </div>
-                      <p className={styles.digestSub}>{ranking.length}クラス中</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* ミニランキング */}
-                <div className={styles.miniRanking}>
-                  <p className={styles.miniRankTtl}>クラス別スコア（上位5件）</p>
-                  <ul className={styles.miniRankList}>
-                    {ranking.slice(0, 5).map(r => (
-                      <li key={r.classId} className={`${styles.miniRankItem} ${r.classId === classId ? styles.miniRankItemSelf : ""}`}>
-                        <span className={styles.miniRankPos}>{r.rank}</span>
-                        <span className={styles.miniRankName}>
-                          {r.className}
-                          {r.classId === classId && <span className={styles.selfTag}>あなた</span>}
-                        </span>
-                        <span className={styles.miniRankScore}>{r.totalCount > 0 ? r.averageScore.toFixed(1) : "—"}</span>
-                      </li>
+            {result ? (
+              <div className={styles.tableWrap}>
+                <table className={styles.resultTable}>
+                  <thead>
+                    <tr>
+                      <th className={styles.th} rowSpan={2}>項目</th>
+                      <th className={styles.th} rowSpan={2}>得点／合計</th>
+                      <th className={styles.th} colSpan={3}>校内</th>
+                      <th className={styles.th} colSpan={3}>学年</th>
+                      <th className={styles.th} rowSpan={2}>KTZ</th>
+                    </tr>
+                    <tr>
+                      <th className={styles.th}>偏差値</th>
+                      <th className={styles.th}>順位</th>
+                      <th className={styles.th}>平均値</th>
+                      <th className={styles.th}>偏差値</th>
+                      <th className={styles.th}>順位</th>
+                      <th className={styles.th}>平均値</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { label: "総合",        score: result.totalScore,     max: result.totalMax,      bold: true },
+                      { label: "来場者数",     score: result.visitors,       max: result.visitorsMax   },
+                      { label: "紙チケット入場",score: result.ticket,         max: result.ticketMax     },
+                      { label: "中学生以下",   score: result.underJunior,    max: result.underJuniorMax},
+                      { label: "高校生",       score: result.highSchool,     max: result.highSchoolMax },
+                      { label: "大学生〜30代", score: result.univ30,         max: result.univ30Max     },
+                      { label: "40代・50代",   score: result.age4050,        max: result.age4050Max    },
+                      { label: "60代以上",     score: result.over60,         max: result.over60Max     },
+                      { label: "前高生",       score: result.exStudent,      max: result.exStudentMax,  dashed: true },
+                      { label: "学年内投票数", score: result.voteInSchool,   max: result.voteInSchoolMax },
+                      { label: "装飾賞投票数", score: result.voteDecoration, max: result.voteDecorationMax },
+                    ].map(row => (
+                      <tr key={row.label} className={row.bold ? styles.trTotal : row.dashed ? styles.trDashed : styles.tr}>
+                        <td className={`${styles.td} ${styles.tdLabel}`}>{row.label}</td>
+                        <td className={styles.td}>
+                          {row.score != null && row.max != null
+                            ? `${row.score} / ${row.max}`
+                            : "—"}
+                        </td>
+                        <td className={styles.td}>{row.bold ? result.deviationSchool ?? "—" : "—"}</td>
+                        <td className={styles.td}>
+                          {row.bold && result.rankSchool != null
+                            ? `${result.rankSchool}（位／${result.rankSchoolTotal ?? "?"}クラス中）`
+                            : "—"}
+                        </td>
+                        <td className={styles.td}>{row.bold ? result.avgSchool ?? "—" : "—"}</td>
+                        <td className={styles.td}>{row.bold ? result.deviationGrade ?? "—" : "—"}</td>
+                        <td className={styles.td}>
+                          {row.bold && result.rankGrade != null
+                            ? `${result.rankGrade}（位／${result.rankGradeTotal ?? "?"}クラス中）`
+                            : "—"}
+                        </td>
+                        <td className={styles.td}>{row.bold ? result.avgGrade ?? "—" : "—"}</td>
+                        <td className={`${styles.td} ${styles.tdKtz}`}>{row.bold ? result.ktz ?? "—" : ""}</td>
+                      </tr>
                     ))}
-                  </ul>
-                  <a href="#ranking" className={styles.miniRankMore}>すべてのクラスを見る →</a>
-                </div>
-              </section>
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className={styles.empty}>
+                <p className={styles.emptyTtl}>成績データがまだ登録されていません</p>
+              </div>
+            )}
+          </section>
 
-              {/* ════ ② 成績結果（マナビジョン風テーブル） ════ */}
-              <section id="seiseki" className={styles.section}>
-                <div className={styles.sectionHead}>
-                  <h2 className={styles.sectionTtl}>成績結果</h2>
-                </div>
+          {/* ════ STEP2 来場者バランス ════ */}
+          <section id="balance" className={styles.section}>
+            <div className={styles.stepHead}>
+              <span className={styles.stepBadge}>STEP<br />2</span>
+              <div>
+                <h2 className={styles.stepTtl}>来場者バランス</h2>
+                <p className={styles.stepPoint}>
+                  <span className={styles.pointLabel}>POINT</span>
+                  今回最も偏差値が低かった入場者層に注目し、バランスを整えることを大事にしよう。
+                </p>
+              </div>
+            </div>
 
-                {summary.totalCount === 0 ? (
-                  <div className={styles.empty}>
-                    <p className={styles.emptyTtl}>まだ評価が届いていません</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* スコアテーブル */}
-                    <div className={styles.scoreTableWrap}>
-                      <table className={styles.scoreTable}>
-                        <thead>
-                          <tr>
-                            <th className={`${styles.scoreTh} ${styles.scoreThItem}`}>評価項目</th>
-                            <th className={styles.scoreTh}>得点 / 満点</th>
-                            <th className={styles.scoreTh}>全体平均</th>
-                            <th className={styles.scoreTh}>差分</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {/* 総合 */}
-                          <tr className={styles.scoreRowTotal}>
-                            <th className={`${styles.scoreTd} ${styles.scoreItemName} ${styles.scoreItemNameTotal}`}>
-                              総合
-                            </th>
-                            <td className={styles.scoreTd}>
-                              <span className={styles.scoreNum}>{summary.averageScore.toFixed(1)}</span>
-                              <span className={styles.scoreFull}>5.0</span>
-                            </td>
-                            <td className={styles.scoreTd}>
-                              {/* 全体平均は将来Supabaseから取得 */}
-                              <span className={styles.scoreAvg}>—</span>
-                            </td>
-                            <td className={styles.scoreTd}>—</td>
-                          </tr>
-                          {/* 項目別 */}
-                          {summary.itemScores.map(item => {
-                            const diff = item.myScore > 0 && item.average > 0
-                              ? (item.myScore - item.average).toFixed(1) : null;
-                            return (
-                              <tr key={item.key} className={styles.scoreRow}>
-                                <th className={`${styles.scoreTd} ${styles.scoreItemName}`}>
-                                  {item.label}
-                                </th>
-                                <td className={styles.scoreTd}>
-                                  <div className={styles.scoreCellWrap}>
-                                    <span className={styles.scoreNum}>{item.myScore > 0 ? item.myScore.toFixed(1) : "—"}</span>
-                                    <span className={styles.scoreFull}>{item.maxScore.toFixed(1)}</span>
-                                  </div>
-                                  {item.myScore > 0 && (
-                                    <div className={styles.scoreBarCell}>
-                                      <div className={styles.scoreBarCellFill} style={{ width: `${item.myScore / item.maxScore * 100}%` }} />
-                                      <div className={styles.scoreBarCellAvg} style={{ left: `${item.average / item.maxScore * 100}%` }} />
-                                    </div>
-                                  )}
-                                </td>
-                                <td className={styles.scoreTd}>
-                                  <span className={styles.scoreAvg}>{item.average > 0 ? item.average.toFixed(1) : "—"}</span>
-                                </td>
-                                <td className={styles.scoreTd}>
-                                  {diff !== null ? (
-                                    <span className={Number(diff) >= 0 ? styles.diffPos : styles.diffNeg}>
-                                      {Number(diff) >= 0 ? "+" : ""}{diff}
-                                    </span>
-                                  ) : "—"}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+            {graphs.radar || graphs.pieGender ? (
+              <div className={styles.graphGrid}>
+                {graphs.radar && (
+                  <div className={styles.graphCard}>
+                    <p className={styles.graphTtl}>年代別の来場者バランス</p>
+                    <div className={styles.graphImgWrap}>
+                      <Image src={graphs.radar} alt="年代別来場者バランス" fill style={{ objectFit: "contain" }} unoptimized />
                     </div>
-
-                    {/* 全クラスランキング */}
-                    <div id="ranking" className={styles.rankTableSection}>
-                      <p className={styles.rankTableTtl}>全クラスランキング</p>
-                      <table className={styles.rankTable}>
-                        <thead>
-                          <tr>
-                            <th className={styles.rankTh}>順位</th>
-                            <th className={styles.rankTh}>クラス</th>
-                            <th className={styles.rankTh}>平均スコア</th>
-                            <th className={styles.rankTh}>件数</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {ranking.map(r => (
-                            <tr key={r.classId} className={r.classId === classId ? styles.rankRowSelf : styles.rankRow}>
-                              <td className={styles.rankTd}>
-                                {r.rank <= 3
-                                  ? <span className={`${styles.medal} ${styles[`medal${r.rank}` as "medal1"|"medal2"|"medal3"]}`}>{r.rank}</span>
-                                  : r.rank}
-                              </td>
-                              <td className={styles.rankTd}>
-                                {r.className}
-                                {r.classId === classId && <span className={styles.selfTag}>あなた</span>}
-                              </td>
-                              <td className={styles.rankTd}>
-                                <div className={styles.rankScoreWrap}>
-                                  <span className={styles.rankScoreNum}>{r.totalCount > 0 ? r.averageScore.toFixed(1) : "—"}</span>
-                                  {r.totalCount > 0 && (
-                                    <div className={styles.rankBar}>
-                                      <div className={styles.rankBarFill} style={{ width: `${r.averageScore / 5 * 100}%` }} />
-                                    </div>
-                                  )}
-                                </div>
-                              </td>
-                              <td className={styles.rankTd}>{r.totalCount}件</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
-              </section>
-
-              {/* ════ ③ 来場者からの感想 ════ */}
-              <section id="kanso" className={styles.section}>
-                <div className={styles.sectionHead}>
-                  <h2 className={styles.sectionTtl}>来場者からの感想</h2>
-                </div>
-
-                {summary.entries.length === 0 ? (
-                  <div className={styles.empty}>
-                    <p className={styles.emptyTtl}>まだ感想が届いていません</p>
-                    <p className={styles.emptySub}>来場者からの感想が届くとここに表示されます。</p>
-                  </div>
-                ) : (
-                  <div className={styles.qaWrap}>
-                    {QA_QUESTIONS.map(q => {
-                      const answers = summary.entries
-                        .map(e => ({ from: e.fromClassId, ans: e.qaAnswers?.[q.key] }))
-                        .filter(a => a.ans);
-                      return (
-                        <div key={q.key} className={styles.qaBlock}>
-                          <div className={styles.qaQuestion}>
-                            <span className={styles.qaQIcon}>Q</span>
-                            <p className={styles.qaQText}>{q.label}</p>
-                          </div>
-                          {answers.length === 0 ? (
-                            <p className={styles.qaNoAnswer}>回答なし</p>
-                          ) : (
-                            <ul className={styles.qaAnswerList}>
-                              {answers.map((a, i) => (
-                                <li key={i} className={styles.qaAnswerItem}>
-                                  <span className={styles.qaAIcon}>A</span>
-                                  <div className={styles.qaAnswerBody}>
-                                    <p className={styles.qaAnswerText}>{a.ans}</p>
-                                    <p className={styles.qaAnswerFrom}>{a.from} より</p>
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      );
-                    })}
                   </div>
                 )}
-              </section>
+                {graphs.pieGender && (
+                  <div className={styles.graphCard}>
+                    <p className={styles.graphTtl}>性別の来場者バランス</p>
+                    <div className={styles.graphImgWrap}>
+                      <Image src={graphs.pieGender} alt="性別来場者バランス" fill style={{ objectFit: "contain" }} unoptimized />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={styles.empty}>
+                <p className={styles.emptyTtl}>グラフ画像がまだ登録されていません</p>
+                <p className={styles.emptySub}>管理者ページから画像をアップロードしてください。</p>
+              </div>
+            )}
+          </section>
 
-            </div>{/* /content */}
-          </div>{/* /layout */}
-        </div>{/* /inner */}
+          {/* ════ 来場者コメント ════ */}
+          <section id="comments" className={styles.section}>
+            <div className={styles.sectionHead}>
+              <h2 className={styles.sectionTtl}>来場者コメント</h2>
+            </div>
+
+            {comments.length === 0 ? (
+              <div className={styles.empty}>
+                <p className={styles.emptyTtl}>コメントがまだありません</p>
+              </div>
+            ) : (
+              <ul className={styles.commentList}>
+                {comments.map(c => (
+                  <li key={c.id} className={styles.commentItem}>
+                    <span className={styles.commentIcon}>✍</span>
+                    <div className={styles.commentBody}>
+                      <p className={styles.commentText}>{c.comment}</p>
+                      <p className={styles.commentDate}>
+                        {new Date(c.createdAt).toLocaleDateString("ja-JP", { year:"numeric", month:"long", day:"numeric" })}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+        </div>
       </main>
 
       <footer className={styles.footer}>
-        <p className={styles.copyright}>
-          Copyright © Koryo Festival Committee&nbsp; All rights reserved.
-        </p>
+        <p className={styles.copyright}>Copyright © Koryo Festival Committee&nbsp; All rights reserved.</p>
       </footer>
     </div>
   );
