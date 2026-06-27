@@ -1,54 +1,79 @@
 .page { min-height:100vh; display:flex; flex-direction:column; background:#EEEEEE; font-family:"Noto Sans JP",sans-serif; }
+
+/* ヘッダー */
 .header { background:#fff; border-bottom:3px solid #8cd15c; height:56px; flex-shrink:0; }
 .headerInner { max-width:1100px; margin:0 auto; height:100%; padding:0 24px; display:flex; align-items:center; justify-content:space-between; }
 .siteName { font-family:"Kosugi Maru",sans-serif; font-size:20px; color:#000; }
 .green { color:#8cd15c; }
-.headerRight { display:flex; align-items:center; gap:12px; }
-.backBtn { background:none; border:1px solid #8cd15c; color:#8cd15c; border-radius:3px; padding:5px 14px; font-size:13px; cursor:pointer; font-family:inherit; }
+.backBtn { background:none; border:1px solid #8cd15c; color:#8cd15c; border-radius:3px; padding:6px 14px; font-size:13px; cursor:pointer; font-family:inherit; transition:background 0.15s; }
 .backBtn:hover { background:#e8f8d8; }
 
+/* メイン */
 .main { flex:1; }
 .inner { max-width:900px; margin:0 auto; padding:24px 24px 48px; }
-.pageTitle { font-family:"Kosugi Maru",sans-serif; font-size:24px; color:#000; margin-bottom:20px; }
+.pageTitle { font-family:"Kosugi Maru",sans-serif; font-size:24px; color:#000; margin:0 0 20px; }
 
-.classSelect { background:#fff; padding:16px 20px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:16px; display:flex; align-items:center; gap:12px; }
+/* クラス選択 */
+.classSelectBar { background:#fff; padding:14px 20px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:0; display:flex; align-items:center; gap:12px; }
 
-.tabBar { display:flex; gap:4px; margin-bottom:0; border-bottom:2px solid #8cd15c; }
-.tab { padding:10px 20px; font-size:14px; font-weight:700; color:#555; background:none; border:none; border-radius:4px 4px 0 0; cursor:pointer; font-family:inherit; transition:background 0.1s; }
+/* タブ */
+.tabBar { display:flex; gap:2px; border-bottom:2px solid #8cd15c; margin-bottom:0; }
+.tab { padding:10px 22px; font-size:14px; font-weight:700; color:#555; background:none; border:none; border-radius:4px 4px 0 0; cursor:pointer; font-family:inherit; transition:background 0.1s,color 0.1s; }
 .tab:hover { background:#e8f8d8; color:#5aaa20; }
-.tabActive { background:#8cd15c; color:#fff; }
-.tabActive:hover { background:#78be47; color:#fff; }
+.tabActive { background:#8cd15c !important; color:#fff !important; }
 
+/* カード */
 .card { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); padding:24px; }
 .cardTtl { font-family:"Kosugi Maru",sans-serif; font-size:18px; color:#000; margin:0 0 6px; }
 .cardSub { font-size:13px; color:#888; margin:0 0 20px; }
 
-.formGrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+/* セクション分け */
+.fieldSection { margin-bottom:24px; }
+.fieldSectionTtl { font-size:13px; font-weight:700; color:#fff; background:#8cd15c; padding:5px 12px; border-radius:3px; margin:0 0 12px; display:inline-block; }
+
+/* フォーム */
+.formGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .formField { display:flex; flex-direction:column; gap:4px; }
 .label { font-size:12px; font-weight:700; color:#555; }
-.input { padding:8px 10px; border:1px solid #ccc; border-radius:3px; font-size:14px; font-family:inherit; }
-.input:focus { outline:none; border-color:#8cd15c; box-shadow:0 0 0 2px rgba(140,209,92,0.3); }
+.input { padding:8px 10px; border:1px solid #ccc; border-radius:3px; font-size:14px; font-family:inherit; transition:border-color 0.15s; }
+.input:focus { outline:none; border-color:#8cd15c; box-shadow:0 0 0 2px rgba(140,209,92,0.25); }
 .select { padding:8px 10px; border:1px solid #ccc; border-radius:3px; font-size:14px; font-family:inherit; background:#fff; }
-.fileInput { font-size:13px; }
+.fileInput { font-size:13px; padding:4px 0; }
+.fileName { font-size:12px; color:#8cd15c; margin:4px 0 0; }
+
+/* ボタン */
+.saveBtn { margin-top:20px; background:#e2551e; color:#fff; border:none; border-radius:30px; padding:12px 48px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; transition:background 0.15s; display:block; }
+.saveBtn:hover:not(:disabled) { background:#c94918; }
+.saveBtn:disabled { opacity:0.55; cursor:not-allowed; }
+.addBtn { background:#8cd15c; color:#fff; border:none; border-radius:3px; padding:10px 28px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:background 0.15s; align-self:flex-end; }
+.addBtn:hover:not(:disabled) { background:#78be47; }
+.addBtn:disabled { opacity:0.55; cursor:not-allowed; }
+
+/* メッセージ */
+.msgOk  { font-size:13px; color:#2a9d2a; font-weight:700; margin:10px 0 0; }
+.msgErr { font-size:13px; color:#c00;    font-weight:700; margin:10px 0 0; }
+
+/* textarea */
 .textarea { width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:3px; font-size:14px; font-family:inherit; resize:vertical; }
 .textarea:focus { outline:none; border-color:#8cd15c; }
 
-.saveBtn { background:#e2551e; color:#fff; border:none; border-radius:30px; padding:10px 40px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; transition:background 0.15s; }
-.saveBtn:hover:not(:disabled) { background:#c94918; }
-.saveBtn:disabled { opacity:0.6; cursor:not-allowed; }
-
-.msg { font-size:13px; margin:8px 0; }
-
-.commentForm { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+/* コメント */
+.commentInputWrap { display:flex; gap:10px; align-items:flex-start; margin-bottom:8px; }
+.commentCount { font-size:12px; color:#888; margin:16px 0 8px; padding-top:16px; border-top:1px solid #eee; }
 .commentList { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
 .commentItem { padding:12px 16px; background:#f9f9f9; border:1px solid #eee; border-radius:4px; }
-.commentText { font-size:14px; color:#222; line-height:1.6; margin:0 0 6px; }
+.commentText { font-size:14px; color:#222; line-height:1.6; margin:0 0 8px; white-space:pre-wrap; }
 .commentMeta { display:flex; justify-content:space-between; align-items:center; }
 .commentDate { font-size:11px; color:#aaa; }
-.deleteBtn { background:none; border:1px solid #ccc; color:#888; border-radius:3px; padding:3px 10px; font-size:12px; cursor:pointer; }
+.deleteBtn { background:none; border:1px solid #ddd; color:#999; border-radius:3px; padding:3px 12px; font-size:12px; cursor:pointer; transition:border-color 0.15s,color 0.15s; }
 .deleteBtn:hover { border-color:#e00; color:#e00; }
 
+/* フッター */
 .footer { background:#fff; border-top:1px solid #eee; padding:12px 24px; flex-shrink:0; }
 .copyright { font-size:12px; color:#888; }
 
-@media screen and (max-width:640px) { .formGrid { grid-template-columns:1fr; } }
+@media screen and (max-width:640px) {
+  .formGrid { grid-template-columns:1fr; }
+  .commentInputWrap { flex-direction:column; }
+  .addBtn { width:100%; }
+}
