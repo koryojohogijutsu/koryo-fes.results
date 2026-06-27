@@ -1,67 +1,64 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { supabaseAdmin, isSupabaseAdminConfigured } from "./supabaseAdmin";
+import { createClient } from "@supabase/supabase-js";
 
-function loadUsersFromEnv() {
-  const raw = process.env.AUTH_USERS;
-  if (!raw) return null;
-  return raw.split(",").map((e, i) => {
-    const [loginId, password, name, classId] = e.trim().split(":").map(s => s.trim());
-    return { id: String(i + 1), loginId, password, name: name || loginId, classId: classId || loginId };
-  }).filter(u => u.loginId && u.password);
-}
-
-const DEMO_USERS = [
-  { id: "1", loginId: "admin", password: "password123", name: "管理者",  classId: "admin" },
-  { id: "2", loginId: "1-1",   password: "password123", name: "1年1組", classId: "1-1"   },
-  { id: "3", loginId: "1-2",   password: "password123", name: "1年2組", classId: "1-2"   },
-];
-
-async function authorizeWithSupabase(loginId: string, password: string) {
-  if (!isSupabaseAdminConfigured() || !supabaseAdmin) return null;
-
-  const { data, error } = await supabaseAdmin
-    .from("koryo_classes")
-    .select("id, login_id, password_hash, name")
-    .eq("login_id", loginId)
-    .eq("password_hash", password)   // 直接比較
-    .maybeSingle();
-
-  if (error || !data) return null;
-  return { id: data.id, name: data.name, email: data.login_id, classId: data.id };
-}
-
-function authorizeWithEnv(loginId: string, password: string) {
-  const user = (loadUsersFromEnv() ?? DEMO_USERS).find(
-    u => u.loginId === loginId && u.password === password
-  );
-  if (!user) return null;
-  return { id: user.id, name: user.name, email: user.loginId, classId: user.classId };
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false } });
 }
 
 export const authOptions: NextAuthOptions = {
-  providers: [CredentialsProvider({
-    name: "credentials",
-    credentials: {
-      loginId:  { label: "ログインID", type: "text"     },
-      password: { label: "パスワード", type: "password" },
-    },
-    async authorize(credentials) {
-      if (!credentials?.loginId || !credentials?.password) return null;
-      if (isSupabaseAdminConfigured()) {
-        return await authorizeWithSupabase(credentials.loginId, credentials.password);
-      }
-      return authorizeWithEnv(credentials.loginId, credentials.password);
-    },
-  })],
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        loginId:  { label: "ログインID", type: "text" },
+        password: { label: "パスワード", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.loginId || !credentials?.password) return null;
+
+        const supabase = getSupabase();
+        if (!supabase) return null;
+
+        const { data, error } = await supabase
+          .from("koryo_classes")
+          .select("id, login_id, password_hash, name, role")
+          .eq("login_id", credentials.loginId)
+          .eq("password_hash", credentials.password)
+          .maybeSingle();
+
+        if (error || !data) return null;
+
+        return {
+          id:      data.id,
+          name:    data.name,
+          email:   data.login_id,
+          classId: data.id,
+          role:    data.role ?? "class",
+        };
+      },
+    }),
+  ],
   pages: { signIn: "/login", error: "/login" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) { token.id = user.id; token.classId = user.classId; }
+      if (user) {
+        token.id      = user.id;
+        token.classId = (user as { classId?: string }).classId;
+        token.role    = (user as { role?: string }).role;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) { session.user.id = token.id; session.user.classId = token.classId; }
+      if (session.user) {
+        const u = session.user as { id?: string; classId?: string; role?: string };
+        u.id      = token.id      as string;
+        u.classId = token.classId as string;
+        u.role    = token.role    as string;
+      }
       return session;
     },
   },
