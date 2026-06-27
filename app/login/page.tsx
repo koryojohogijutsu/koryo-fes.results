@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/LoginForm";
 
 export const metadata = {
-  title: "蛟龍祭クラス企画評価",
+  title: "蛟龍祭 ログイン画面｜第60回蛟龍祭 実行委員会",
 };
 
 export default async function LoginPage({
@@ -14,7 +14,12 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const session = await getServerSession(authOptions);
-  if (session) redirect("/member");
+
+  if (session) {
+    // ログイン済みの場合はroleで振り分け
+    if (session.user?.role === "admin") redirect("/admin");
+    redirect("/member");
+  }
 
   return (
     <LoginForm
