@@ -1,18 +1,21 @@
 import { Session } from "next-auth";
-import { getClassResult, getGraphUrls, getVisitorComments } from "@/lib/results";
+import { ClassResult, GraphUrls } from "@/lib/results";
 import { LogoutButton } from "./LogoutButton";
 import Image from "next/image";
 import styles from "./MemberPage.module.css";
 
-export async function MemberPage({ session }: { session: Session }) {
-  const classId = session.user?.classId ?? "";
-  const className = session.user?.name ?? classId;
+interface Props {
+  session: Session;
+  result: ClassResult | null;
+  graphs: GraphUrls;
+  comments: { id: string; comment: string; createdAt: string }[];
+}
 
-  const [result, graphs, comments] = await Promise.all([
-    getClassResult(classId),
-    getGraphUrls(classId),
-    getVisitorComments(classId),
-  ]);
+const fmt = (score?: number, max?: number) =>
+  score != null && max != null ? `${score} / ${max}` : "—";
+
+export function MemberPage({ session, result, graphs, comments }: Props) {
+  const className = session.user?.name ?? session.user?.classId ?? "";
 
   return (
     <div className={styles.page}>
@@ -20,9 +23,7 @@ export async function MemberPage({ session }: { session: Session }) {
       {/* ヘッダー */}
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <span className={styles.headerSiteName}>
-            クラス<span className={styles.green}>企画</span>評価
-          </span>
+          <span className={styles.siteName}>クラス<span className={styles.green}>企画</span>評価</span>
           <div className={styles.headerRight}>
             <span className={styles.userName}>{className}</span>
             <LogoutButton />
@@ -33,32 +34,22 @@ export async function MemberPage({ session }: { session: Session }) {
       <main className={styles.main}>
         <div className={styles.inner}>
 
-          {/* パンくず（「蛟龍祭クラス企画評価>」削除） */}
-          <nav className={styles.breadcrumb}>
-            <strong>{className} の評価結果</strong>
-          </nav>
+          <h1 className={styles.pageTitle}>{className} の評価結果</h1>
 
-          {/* タブバー */}
-          <div className={styles.tabBar}>
-            <a href="#seiseki" className={styles.tab}>今回の成績</a>
-            <a href="#balance" className={styles.tab}>来場者バランス</a>
-            <a href="#comments" className={styles.tab}>来場者コメント</a>
-          </div>
-
-          {/* ════ STEP1 今回の成績 ════ */}
-          <section id="seiseki" className={styles.section}>
+          {/* ══ STEP1 今回の成績 ══ */}
+          <section className={styles.section}>
             <div className={styles.stepHead}>
-              <span className={styles.stepBadge}>STEP<br />1</span>
-              <div>
+              <div className={styles.stepBadge}><span>STEP</span><span>1</span></div>
+              <div className={styles.stepHeadText}>
                 <h2 className={styles.stepTtl}>今回の成績</h2>
                 <p className={styles.stepPoint}>
-                  <span className={styles.pointLabel}>POINT</span>
+                  <span className={styles.pointTag}>POINT</span>
                   まずは前高全体の来場者情報で、自分のクラスの位置を確認してみよう。
                 </p>
               </div>
             </div>
 
-            {/* 集客力確認メッセージ */}
+            {/* 集客力ターゲットメッセージ */}
             {result?.targetMessage && (
               <div className={styles.targetBox}>
                 <span className={styles.targetIcon}>!</span>
@@ -76,8 +67,8 @@ export async function MemberPage({ session }: { session: Session }) {
                     <tr>
                       <th className={styles.th} rowSpan={2}>項目</th>
                       <th className={styles.th} rowSpan={2}>得点／合計</th>
-                      <th className={styles.th} colSpan={3}>校内</th>
-                      <th className={styles.th} colSpan={3}>学年</th>
+                      <th className={`${styles.th} ${styles.thGroup}`} colSpan={3}>校内</th>
+                      <th className={`${styles.th} ${styles.thGroup}`} colSpan={3}>学年</th>
                       <th className={styles.th} rowSpan={2}>KTZ</th>
                     </tr>
                     <tr>
@@ -90,61 +81,86 @@ export async function MemberPage({ session }: { session: Session }) {
                     </tr>
                   </thead>
                   <tbody>
+                    {/* 総合 */}
+                    <tr className={styles.trTotal}>
+                      <td className={`${styles.td} ${styles.tdLabel}`}>総合</td>
+                      <td className={styles.td}>{fmt(result.totalScore, result.totalMax)}</td>
+                      <td className={styles.td}>{result.deviationSchool ?? "—"}</td>
+                      <td className={styles.td}>{result.rankSchool != null ? `${result.rankSchool}（位／${result.rankSchoolTotal ?? "?"}クラス中）` : "—"}</td>
+                      <td className={styles.td}>{result.avgSchool ?? "—"}</td>
+                      <td className={styles.td}>{result.deviationGrade ?? "—"}</td>
+                      <td className={styles.td}>{result.rankGrade != null ? `${result.rankGrade}（位／${result.rankGradeTotal ?? "?"}クラス中）` : "—"}</td>
+                      <td className={styles.td}>{result.avgGrade ?? "—"}</td>
+                      <td className={`${styles.td} ${styles.tdKtz}`}>{result.ktz ?? "—"}</td>
+                    </tr>
+                    {/* 来場者数 */}
+                    <tr className={styles.tr}>
+                      <td className={`${styles.td} ${styles.tdLabel}`}>来場者数</td>
+                      <td className={styles.td}>{fmt(result.visitors, result.visitorsMax)}</td>
+                      <td className={styles.td} colSpan={6}></td>
+                      <td className={styles.td}></td>
+                    </tr>
+                    {/* 紙チケット */}
+                    <tr className={styles.trAlt}>
+                      <td className={`${styles.td} ${styles.tdLabel}`}>紙チケット入場</td>
+                      <td className={styles.td}>{fmt(result.ticket, result.ticketMax)}</td>
+                      <td className={styles.td} colSpan={6}></td>
+                      <td className={styles.td}></td>
+                    </tr>
+                    {/* 年代別 */}
                     {[
-                      { label: "総合",        score: result.totalScore,     max: result.totalMax,      bold: true },
-                      { label: "来場者数",     score: result.visitors,       max: result.visitorsMax   },
-                      { label: "紙チケット入場",score: result.ticket,         max: result.ticketMax     },
-                      { label: "中学生以下",   score: result.underJunior,    max: result.underJuniorMax},
-                      { label: "高校生",       score: result.highSchool,     max: result.highSchoolMax },
-                      { label: "大学生〜30代", score: result.univ30,         max: result.univ30Max     },
-                      { label: "40代・50代",   score: result.age4050,        max: result.age4050Max    },
-                      { label: "60代以上",     score: result.over60,         max: result.over60Max     },
-                      { label: "前高生",       score: result.exStudent,      max: result.exStudentMax,  dashed: true },
-                      { label: "学年内投票数", score: result.voteInSchool,   max: result.voteInSchoolMax },
-                      { label: "装飾賞投票数", score: result.voteDecoration, max: result.voteDecorationMax },
-                    ].map(row => (
-                      <tr key={row.label} className={row.bold ? styles.trTotal : row.dashed ? styles.trDashed : styles.tr}>
+                      { label: "中学生以下",   s: result.underJunior, m: result.underJuniorMax },
+                      { label: "高校生",       s: result.highSchool,  m: result.highSchoolMax  },
+                      { label: "大学生〜30代", s: result.univ30,      m: result.univ30Max      },
+                      { label: "40代・50代",   s: result.age4050,     m: result.age4050Max     },
+                      { label: "60代以上",     s: result.over60,      m: result.over60Max      },
+                    ].map((row, i) => (
+                      <tr key={row.label} className={i % 2 === 0 ? styles.tr : styles.trAlt}>
                         <td className={`${styles.td} ${styles.tdLabel}`}>{row.label}</td>
-                        <td className={styles.td}>
-                          {row.score != null && row.max != null
-                            ? `${row.score} / ${row.max}`
-                            : "—"}
-                        </td>
-                        <td className={styles.td}>{row.bold ? result.deviationSchool ?? "—" : "—"}</td>
-                        <td className={styles.td}>
-                          {row.bold && result.rankSchool != null
-                            ? `${result.rankSchool}（位／${result.rankSchoolTotal ?? "?"}クラス中）`
-                            : "—"}
-                        </td>
-                        <td className={styles.td}>{row.bold ? result.avgSchool ?? "—" : "—"}</td>
-                        <td className={styles.td}>{row.bold ? result.deviationGrade ?? "—" : "—"}</td>
-                        <td className={styles.td}>
-                          {row.bold && result.rankGrade != null
-                            ? `${result.rankGrade}（位／${result.rankGradeTotal ?? "?"}クラス中）`
-                            : "—"}
-                        </td>
-                        <td className={styles.td}>{row.bold ? result.avgGrade ?? "—" : "—"}</td>
-                        <td className={`${styles.td} ${styles.tdKtz}`}>{row.bold ? result.ktz ?? "—" : ""}</td>
+                        <td className={styles.td}>{fmt(row.s, row.m)}</td>
+                        <td className={styles.td} colSpan={6}></td>
+                        <td className={styles.td}></td>
                       </tr>
                     ))}
+                    {/* 前高生（点線上） */}
+                    <tr className={styles.trDashed}>
+                      <td className={`${styles.td} ${styles.tdLabel}`}>前高生</td>
+                      <td className={styles.td}>{fmt(result.exStudent, result.exStudentMax)}</td>
+                      <td className={styles.td} colSpan={6}></td>
+                      <td className={styles.td}></td>
+                    </tr>
+                    {/* 投票数 */}
+                    <tr className={styles.tr}>
+                      <td className={`${styles.td} ${styles.tdLabel}`}>学年内投票数</td>
+                      <td className={styles.td}>{fmt(result.voteInSchool, result.voteInSchoolMax)}</td>
+                      <td className={styles.td} colSpan={6}></td>
+                      <td className={styles.td}></td>
+                    </tr>
+                    <tr className={styles.trAlt}>
+                      <td className={`${styles.td} ${styles.tdLabel}`}>装飾賞投票数</td>
+                      <td className={styles.td}>{fmt(result.voteDecoration, result.voteDecorationMax)}</td>
+                      <td className={styles.td} colSpan={6}></td>
+                      <td className={styles.td}></td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             ) : (
               <div className={styles.empty}>
                 <p className={styles.emptyTtl}>成績データがまだ登録されていません</p>
+                <p className={styles.emptySub}>管理者から登録されるまでお待ちください。</p>
               </div>
             )}
           </section>
 
-          {/* ════ STEP2 来場者バランス ════ */}
-          <section id="balance" className={styles.section}>
+          {/* ══ STEP2 来場者バランス ══ */}
+          <section className={styles.section}>
             <div className={styles.stepHead}>
-              <span className={styles.stepBadge}>STEP<br />2</span>
-              <div>
+              <div className={`${styles.stepBadge} ${styles.stepBadge2}`}><span>STEP</span><span>2</span></div>
+              <div className={styles.stepHeadText}>
                 <h2 className={styles.stepTtl}>来場者バランス</h2>
                 <p className={styles.stepPoint}>
-                  <span className={styles.pointLabel}>POINT</span>
+                  <span className={styles.pointTag}>POINT</span>
                   今回最も偏差値が低かった入場者層に注目し、バランスを整えることを大事にしよう。
                 </p>
               </div>
@@ -172,17 +188,15 @@ export async function MemberPage({ session }: { session: Session }) {
             ) : (
               <div className={styles.empty}>
                 <p className={styles.emptyTtl}>グラフ画像がまだ登録されていません</p>
-                <p className={styles.emptySub}>管理者ページから画像をアップロードしてください。</p>
               </div>
             )}
           </section>
 
-          {/* ════ 来場者コメント ════ */}
-          <section id="comments" className={styles.section}>
+          {/* ══ 来場者コメント ══ */}
+          <section className={styles.section}>
             <div className={styles.sectionHead}>
               <h2 className={styles.sectionTtl}>来場者コメント</h2>
             </div>
-
             {comments.length === 0 ? (
               <div className={styles.empty}>
                 <p className={styles.emptyTtl}>コメントがまだありません</p>
@@ -192,10 +206,10 @@ export async function MemberPage({ session }: { session: Session }) {
                 {comments.map(c => (
                   <li key={c.id} className={styles.commentItem}>
                     <span className={styles.commentIcon}>✍</span>
-                    <div className={styles.commentBody}>
+                    <div>
                       <p className={styles.commentText}>{c.comment}</p>
                       <p className={styles.commentDate}>
-                        {new Date(c.createdAt).toLocaleDateString("ja-JP", { year:"numeric", month:"long", day:"numeric" })}
+                        {new Date(c.createdAt).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}
                       </p>
                     </div>
                   </li>
