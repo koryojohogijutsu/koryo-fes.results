@@ -1,12 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { MemberPage } from "@/components/MemberPage";
 
-export const metadata = { title: "評価結果｜蛟龍祭クラス企画評価" };
-
-export default async function Member() {
+export default async function Home() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/login");
-  return <MemberPage session={session} />;
+  // 管理者は /admin へ、それ以外は /member へ
+  if (session.user?.role === "admin") redirect("/admin");
+  redirect("/member");
 }
