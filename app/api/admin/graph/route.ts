@@ -1,10 +1,14 @@
-import { requireAdmin } from "@/lib/adminAuth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAdmin(req);
-  if (auth instanceof NextResponse) return auth;
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "admin")
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!supabaseAdmin)
+    return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
   const form      = await req.formData();
   const file      = form.get("file")      as File   | null;
@@ -19,19 +23,15 @@ export async function POST(req: NextRequest) {
   const path   = `graphs/${classId}/${year}/${graphType}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const { error: uploadError } = await supabaseAdmin!.storage
-    .from("koryo-graphs")
-    .upload(path, buffer, { contentType: file.type, upsert: true });
+  const { error: upErr } = await supabaseAdmin.storage
+    .from("koryo-graphs").upload(path, buffer, { contentType: file.type, upsert: true });
+  if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
 
-  if (uploadError) return NextResponse.json({ error: uploadError.message }, { status: 500 });
+  const { error: dbErr } = await supabaseAdmin.from("koryo_graphs").upsert(
+    { class_id: classId, year: Number(year), graph_type: graphType, storage_path: path },
+    { onConflict: "class_id,year,graph_type" }
+  );
+  if (dbErr) return NextResponse.json({ error: dbErr.message }, { status: 500 });
 
-  const { error: dbError } = await supabaseAdmin!
-    .from("koryo_graphs")
-    .upsert(
-      { class_id: classId, year: Number(year), graph_type: graphType, storage_path: path },
-      { onConflict: "class_id,year,graph_type" }
-    );
-
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
   return NextResponse.json({ ok: true, path });
 }
