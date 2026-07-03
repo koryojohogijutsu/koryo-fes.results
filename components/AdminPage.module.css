@@ -48,6 +48,9 @@
 .cmtList { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
 .cmtItem { padding:12px 16px; background:#f9f9f9; border:1px solid #eee; border-radius:4px; }
 .cmtText { font-size:14px; color:#222; line-height:1.6; margin:0 0 6px; white-space:pre-wrap; }
+.cmtQA { margin:0 0 8px; }
+.cmtQA:last-of-type { margin-bottom:6px; }
+.cmtQ { font-size:11px; font-weight:700; color:#8cd15c; margin:0 0 2px; }
 .cmtMeta { display:flex; justify-content:space-between; align-items:center; }
 .cmtDate { font-size:11px; color:#aaa; }
 .delBtn { background:none; border:1px solid #ddd; color:#999; border-radius:3px; padding:2px 10px; font-size:12px; cursor:pointer; }
