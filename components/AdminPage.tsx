@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { signOut } from "next-auth/react";
+import { COMMENT_QUESTIONS } from "@/lib/commentQuestions";
 import styles from "./AdminPage.module.css";
 
 interface ClassOption { id: string; name: string; }
@@ -65,8 +66,8 @@ export function AdminPage() {
   const [uploadMsg, setUploadMsg] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const [newCmt, setNewCmt]   = useState("");
-  const [cmts, setCmts]       = useState<{id:string;comment:string;created_at:string}[]>([]);
+  const [newCmt, setNewCmt]   = useState<Record<string, string>>({ q1: "", q2: "", q3: "" });
+  const [cmts, setCmts]       = useState<{id:string;q1?:string;q2?:string;q3?:string;created_at:string}[]>([]);
   const [cmtMsg, setCmtMsg]   = useState("");
 
   // クラス一覧
@@ -126,19 +127,26 @@ export function AdminPage() {
     setUploading(false);
   }
 
-  // コメント追加
+  // コメント追加（Q1〜Q3のうち最低1つ入力されていれば送信可）
+  const hasAnyCmt = COMMENT_QUESTIONS.some(q => newCmt[q.key]?.trim());
+
   async function addCmt() {
-    if (!newCmt.trim()) return;
+    if (!hasAnyCmt) return;
     setCmtMsg("");
     try {
+      const body: Record<string, string> = { classId: selClass, year: String(year) };
+      for (const q of COMMENT_QUESTIONS) body[q.key] = newCmt[q.key]?.trim() ?? "";
       const res = await fetch("/api/admin/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ classId: selClass, year, comment: newCmt.trim() }),
+        body: JSON.stringify(body),
       });
       const d = await res.json();
-      if (res.ok) { setCmts(p => [d.comment, ...p]); setNewCmt(""); setCmtMsg("✅ 追加しました"); }
-      else setCmtMsg(`❌ ${d.error ?? "失敗しました"}`);
+      if (res.ok) {
+        setCmts(p => [d.comment, ...p]);
+        setNewCmt({ q1: "", q2: "", q3: "" });
+        setCmtMsg("✅ 追加しました");
+      } else setCmtMsg(`❌ ${d.error ?? "失敗しました"}`);
     } catch { setCmtMsg("❌ 通信エラー"); }
   }
 
@@ -237,15 +245,35 @@ export function AdminPage() {
           {tab === "comment" && (
             <div className={styles.card}>
               <h2 className={styles.cardTtl}>来場者コメント管理</h2>
-              <textarea className={styles.textarea} rows={3} value={newCmt}
-                onChange={e => setNewCmt(e.target.value)} placeholder="コメントを入力..." />
-              <button className={styles.btnSm} onClick={addCmt} disabled={!newCmt.trim()}>追加</button>
+              <p className={styles.cardSub}>Q1〜Q3のうち入力した項目のみ保存されます（すべて埋める必要はありません）。</p>
+              {COMMENT_QUESTIONS.map(q => (
+                <div key={q.key} className={styles.field} style={{ marginBottom: 14 }}>
+                  <label className={styles.label}>{q.label}. {q.question}</label>
+                  <textarea
+                    className={styles.textarea}
+                    rows={2}
+                    value={newCmt[q.key] ?? ""}
+                    onChange={e => setNewCmt(p => ({ ...p, [q.key]: e.target.value }))}
+                    placeholder={`${q.label}の回答を入力...`}
+                  />
+                </div>
+              ))}
+              <button className={styles.btnSm} onClick={addCmt} disabled={!hasAnyCmt}>追加</button>
               {cmtMsg && <p className={cmtMsg.startsWith("✅") ? styles.ok : styles.err}>{cmtMsg}</p>}
               <p className={styles.cmtCount}>{cmts.length}件</p>
               <ul className={styles.cmtList}>
                 {cmts.map(c => (
                   <li key={c.id} className={styles.cmtItem}>
-                    <p className={styles.cmtText}>{c.comment}</p>
+                    {COMMENT_QUESTIONS.map(q => {
+                      const val = c[q.key];
+                      if (!val) return null;
+                      return (
+                        <div key={q.key} className={styles.cmtQA}>
+                          <p className={styles.cmtQ}>{q.label}. {q.question}</p>
+                          <p className={styles.cmtText}>{val}</p>
+                        </div>
+                      );
+                    })}
                     <div className={styles.cmtMeta}>
                       <span className={styles.cmtDate}>{new Date(c.created_at).toLocaleDateString("ja-JP")}</span>
                       <button className={styles.delBtn} onClick={() => delCmt(c.id)}>削除</button>
