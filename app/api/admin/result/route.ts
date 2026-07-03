@@ -35,7 +35,25 @@ export async function POST(req: NextRequest) {
   const { classId, year, ...fields } = body;
   if (!classId) return NextResponse.json({ error: "classId required" }, { status: 400 });
 
-  const payload: Record<string, unknown> = { class_id: classId, year: Number(year ?? 2026) };
+  // classId は "{学年}-{組番号}" 形式（例: "1-3" = 1年3組）。
+  // grade / class_num は koryo_results で NOT NULL のため、フォームに項目がなくても
+  // classId から必ず算出してセットする。
+  const [gradePart, classNumPart] = classId.split("-");
+  const grade    = parseInt(gradePart, 10);
+  const classNum = classNumPart != null ? parseInt(classNumPart, 10) : NaN;
+  if (Number.isNaN(grade) || Number.isNaN(classNum)) {
+    return NextResponse.json(
+      { error: `classId の形式が不正です（"学年-組番号" である必要があります）: ${classId}` },
+      { status: 400 }
+    );
+  }
+
+  const payload: Record<string, unknown> = {
+    class_id: classId,
+    year: Number(year ?? 2026),
+    grade,
+    class_num: classNum,
+  };
   for (const [k, v] of Object.entries(fields)) {
     if (v === "" || v == null) { payload[k] = null; continue; }
     if (NUM.includes(k))   { payload[k] = parseInt(String(v), 10);  continue; }
