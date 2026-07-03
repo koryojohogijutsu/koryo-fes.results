@@ -1,5 +1,6 @@
 import { Session } from "next-auth";
-import { ClassResult, GraphUrls } from "@/lib/results";
+import { ClassResult, GraphUrls, VisitorComment } from "@/lib/results";
+import { COMMENT_QUESTIONS } from "@/lib/commentQuestions";
 import { LogoutButton } from "./LogoutButton";
 import Image from "next/image";
 import styles from "./MemberPage.module.css";
@@ -8,7 +9,7 @@ interface Props {
   session: Session;
   result: ClassResult | null;
   graphs: GraphUrls;
-  comments: { id: string; comment: string; createdAt: string }[];
+  comments: VisitorComment[];
 }
 
 const fmt = (score?: number, max?: number) =>
@@ -206,8 +207,17 @@ export function MemberPage({ session, result, graphs, comments }: Props) {
                 {comments.map(c => (
                   <li key={c.id} className={styles.commentItem}>
                     <span className={styles.commentIcon}>✍</span>
-                    <div>
-                      <p className={styles.commentText}>{c.comment}</p>
+                    <div className={styles.commentBody}>
+                      {COMMENT_QUESTIONS.map(q => {
+                        const val = c[q.key];
+                        if (!val) return null;
+                        return (
+                          <div key={q.key} className={styles.commentQA}>
+                            <p className={styles.commentQ}>{q.label}. {q.question}</p>
+                            <p className={styles.commentText}>{val}</p>
+                          </div>
+                        );
+                      })}
                       <p className={styles.commentDate}>
                         {new Date(c.createdAt).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}
                       </p>
