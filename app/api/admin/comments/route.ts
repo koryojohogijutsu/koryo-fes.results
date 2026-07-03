@@ -1,4 +1,4 @@
-import { supabaseAdmin, isSupabaseAdminConfigured } from "./supabaseAdmin";
+import { supabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabaseAdmin";
 
 export interface ClassResult {
   planName?: string;
