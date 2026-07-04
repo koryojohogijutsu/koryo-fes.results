@@ -1,5 +1,5 @@
 import { Session } from "next-auth";
-import { ClassResult, GraphUrls, VisitorComment } from "@/lib/results";
+import { ClassResult, GraphUrls, VisitorComment, ItemStat } from "@/lib/results";
 import { COMMENT_QUESTIONS } from "@/lib/commentQuestions";
 import { LogoutButton } from "./LogoutButton";
 import Image from "next/image";
@@ -14,6 +14,33 @@ interface Props {
 
 const fmt = (score?: number, max?: number) =>
   score != null && max != null ? `${score} / ${max}` : "—";
+
+const fmtRank = (rank?: number, total?: number) =>
+  rank != null ? `${rank}（位／${total ?? "?"}クラス中）` : "—";
+
+// 項目（来場者数・紙チケットなど）の行を共通レンダリングするヘルパー
+function ItemRow({
+  label, stat, rankSchoolTotal, rankGradeTotal, alt, dashed,
+}: {
+  label: string; stat: ItemStat;
+  rankSchoolTotal?: number; rankGradeTotal?: number;
+  alt?: boolean; dashed?: boolean;
+}) {
+  const cls = dashed ? styles.trDashed : alt ? styles.trAlt : styles.tr;
+  return (
+    <tr className={cls}>
+      <td className={`${styles.td} ${styles.tdLabel}`}>{label}</td>
+      <td className={styles.td}>{fmt(stat.value, stat.max)}</td>
+      <td className={styles.td}>{stat.deviationSchool ?? "—"}</td>
+      <td className={styles.td}>{fmtRank(stat.rankSchool, rankSchoolTotal)}</td>
+      <td className={styles.td}>{stat.avgSchool ?? "—"}</td>
+      <td className={styles.td}>{stat.deviationGrade ?? "—"}</td>
+      <td className={styles.td}>{fmtRank(stat.rankGrade, rankGradeTotal)}</td>
+      <td className={styles.td}>{stat.avgGrade ?? "—"}</td>
+      <td className={styles.td}></td>
+    </tr>
+  );
+}
 
 export function MemberPage({ session, result, graphs, comments }: Props) {
   const className = session.user?.name ?? session.user?.classId ?? "";
@@ -87,62 +114,40 @@ export function MemberPage({ session, result, graphs, comments }: Props) {
                       <td className={`${styles.td} ${styles.tdLabel}`}>総合</td>
                       <td className={styles.td}>{fmt(result.totalScore, result.totalMax)}</td>
                       <td className={styles.td}>{result.deviationSchool ?? "—"}</td>
-                      <td className={styles.td}>{result.rankSchool != null ? `${result.rankSchool}（位／${result.rankSchoolTotal ?? "?"}クラス中）` : "—"}</td>
+                      <td className={styles.td}>{fmtRank(result.rankSchool, result.rankSchoolTotal)}</td>
                       <td className={styles.td}>{result.avgSchool ?? "—"}</td>
                       <td className={styles.td}>{result.deviationGrade ?? "—"}</td>
-                      <td className={styles.td}>{result.rankGrade != null ? `${result.rankGrade}（位／${result.rankGradeTotal ?? "?"}クラス中）` : "—"}</td>
+                      <td className={styles.td}>{fmtRank(result.rankGrade, result.rankGradeTotal)}</td>
                       <td className={styles.td}>{result.avgGrade ?? "—"}</td>
                       <td className={`${styles.td} ${styles.tdKtz}`}>{result.ktz ?? "—"}</td>
                     </tr>
-                    {/* 来場者数 */}
-                    <tr className={styles.tr}>
-                      <td className={`${styles.td} ${styles.tdLabel}`}>来場者数</td>
-                      <td className={styles.td}>{fmt(result.visitors, result.visitorsMax)}</td>
-                      <td className={styles.td} colSpan={6}></td>
-                      <td className={styles.td}></td>
-                    </tr>
-                    {/* 紙チケット */}
-                    <tr className={styles.trAlt}>
-                      <td className={`${styles.td} ${styles.tdLabel}`}>紙チケット入場</td>
-                      <td className={styles.td}>{fmt(result.ticket, result.ticketMax)}</td>
-                      <td className={styles.td} colSpan={6}></td>
-                      <td className={styles.td}></td>
-                    </tr>
+
+                    <ItemRow label="来場者数" stat={result.visitors}
+                      rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
+                    <ItemRow label="紙チケット入場" stat={result.ticket} alt
+                      rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
+
                     {/* 年代別 */}
                     {[
-                      { label: "中学生以下",   s: result.underJunior, m: result.underJuniorMax },
-                      { label: "高校生",       s: result.highSchool,  m: result.highSchoolMax  },
-                      { label: "大学生〜30代", s: result.univ30,      m: result.univ30Max      },
-                      { label: "40代・50代",   s: result.age4050,     m: result.age4050Max     },
-                      { label: "60代以上",     s: result.over60,      m: result.over60Max      },
+                      { label: "中学生以下",   stat: result.underJunior },
+                      { label: "高校生",       stat: result.highSchool  },
+                      { label: "大学生〜30代", stat: result.univ30      },
+                      { label: "40代・50代",   stat: result.age4050     },
+                      { label: "60代以上",     stat: result.over60      },
                     ].map((row, i) => (
-                      <tr key={row.label} className={i % 2 === 0 ? styles.tr : styles.trAlt}>
-                        <td className={`${styles.td} ${styles.tdLabel}`}>{row.label}</td>
-                        <td className={styles.td}>{fmt(row.s, row.m)}</td>
-                        <td className={styles.td} colSpan={6}></td>
-                        <td className={styles.td}></td>
-                      </tr>
+                      <ItemRow key={row.label} label={row.label} stat={row.stat} alt={i % 2 !== 0}
+                        rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
                     ))}
+
                     {/* 前高生（点線上） */}
-                    <tr className={styles.trDashed}>
-                      <td className={`${styles.td} ${styles.tdLabel}`}>前高生</td>
-                      <td className={styles.td}>{fmt(result.exStudent, result.exStudentMax)}</td>
-                      <td className={styles.td} colSpan={6}></td>
-                      <td className={styles.td}></td>
-                    </tr>
+                    <ItemRow label="前高生" stat={result.exStudent} dashed
+                      rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
+
                     {/* 投票数 */}
-                    <tr className={styles.tr}>
-                      <td className={`${styles.td} ${styles.tdLabel}`}>学年内投票数</td>
-                      <td className={styles.td}>{fmt(result.voteInSchool, result.voteInSchoolMax)}</td>
-                      <td className={styles.td} colSpan={6}></td>
-                      <td className={styles.td}></td>
-                    </tr>
-                    <tr className={styles.trAlt}>
-                      <td className={`${styles.td} ${styles.tdLabel}`}>装飾賞投票数</td>
-                      <td className={styles.td}>{fmt(result.voteDecoration, result.voteDecorationMax)}</td>
-                      <td className={styles.td} colSpan={6}></td>
-                      <td className={styles.td}></td>
-                    </tr>
+                    <ItemRow label="学年内投票数" stat={result.voteInSchool}
+                      rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
+                    <ItemRow label="装飾賞投票数" stat={result.voteDecoration} alt
+                      rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
                   </tbody>
                 </table>
               </div>
