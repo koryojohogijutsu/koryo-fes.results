@@ -1,27 +1,51 @@
 import { supabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabaseAdmin";
 
+// 項目（来場者数・紙チケットなど）ごとの校内/学年の偏差値・順位・平均値
+export interface ItemStat {
+  value?: number;   max?: number;
+  deviationSchool?: number; rankSchool?: number; avgSchool?: number;
+  deviationGrade?: number;  rankGrade?: number;   avgGrade?: number;
+}
+
 export interface ClassResult {
   planName?: string;
   targetMessage?: string;
   ktz?: string;
   totalScore?: number;     totalMax?: number;
-  visitors?: number;       visitorsMax?: number;
-  ticket?: number;         ticketMax?: number;
-  underJunior?: number;    underJuniorMax?: number;
-  highSchool?: number;     highSchoolMax?: number;
-  univ30?: number;         univ30Max?: number;
-  age4050?: number;        age4050Max?: number;
-  over60?: number;         over60Max?: number;
-  exStudent?: number;      exStudentMax?: number;
-  voteInSchool?: number;   voteInSchoolMax?: number;
-  voteDecoration?: number; voteDecorationMax?: number;
   deviationSchool?: number; rankSchool?: number; rankSchoolTotal?: number; avgSchool?: number;
   deviationGrade?: number;  rankGrade?: number;  rankGradeTotal?: number;  avgGrade?: number;
+
+  visitors: ItemStat;
+  ticket: ItemStat;
+  underJunior: ItemStat;
+  highSchool: ItemStat;
+  univ30: ItemStat;
+  age4050: ItemStat;
+  over60: ItemStat;
+  exStudent: ItemStat;
+  voteInSchool: ItemStat;
+  voteDecoration: ItemStat;
 }
 
 export interface GraphUrls {
   radar?: string;
   pieGender?: string;
+}
+
+const n = (v: unknown) => v != null ? Number(v) : undefined;
+
+// data から prefix_xxx 列を読み取って ItemStat を組み立てるヘルパー
+function readItemStat(data: Record<string, unknown>, prefix: string): ItemStat {
+  return {
+    value: n(data[prefix]),
+    max: n(data[`${prefix}_max`]),
+    deviationSchool: n(data[`${prefix}_deviation_school`]),
+    rankSchool: n(data[`${prefix}_rank_school`]),
+    avgSchool: n(data[`${prefix}_avg_school`]),
+    deviationGrade: n(data[`${prefix}_deviation_grade`]),
+    rankGrade: n(data[`${prefix}_rank_grade`]),
+    avgGrade: n(data[`${prefix}_avg_grade`]),
+  };
 }
 
 export async function getClassResult(classId: string, year = 2026): Promise<ClassResult | null> {
@@ -30,26 +54,27 @@ export async function getClassResult(classId: string, year = 2026): Promise<Clas
     .from("koryo_results").select("*")
     .eq("class_id", classId).eq("year", year).maybeSingle();
   if (error || !data) return null;
-  const n = (v: unknown) => v != null ? Number(v) : undefined;
+
   return {
     planName: data.plan_name ?? undefined,
     targetMessage: data.target_message ?? undefined,
     ktz: data.ktz ?? undefined,
-    totalScore: n(data.total_score),     totalMax: n(data.total_max),
-    visitors: n(data.visitors),          visitorsMax: n(data.visitors_max),
-    ticket: n(data.ticket),              ticketMax: n(data.ticket_max),
-    underJunior: n(data.under_junior),   underJuniorMax: n(data.under_junior_max),
-    highSchool: n(data.high_school),     highSchoolMax: n(data.high_school_max),
-    univ30: n(data.univ_30),             univ30Max: n(data.univ_30_max),
-    age4050: n(data.age_40_50),          age4050Max: n(data.age_40_50_max),
-    over60: n(data.over_60),             over60Max: n(data.over_60_max),
-    exStudent: n(data.ex_student),       exStudentMax: n(data.ex_student_max),
-    voteInSchool: n(data.vote_in_school),   voteInSchoolMax: n(data.vote_in_school_max),
-    voteDecoration: n(data.vote_decoration), voteDecorationMax: n(data.vote_decoration_max),
+    totalScore: n(data.total_score), totalMax: n(data.total_max),
     deviationSchool: n(data.deviation_school), rankSchool: n(data.rank_school),
     rankSchoolTotal: n(data.rank_school_total), avgSchool: n(data.avg_school),
     deviationGrade: n(data.deviation_grade),   rankGrade: n(data.rank_grade),
     rankGradeTotal: n(data.rank_grade_total),   avgGrade: n(data.avg_grade),
+
+    visitors:       readItemStat(data, "visitors"),
+    ticket:         readItemStat(data, "ticket"),
+    underJunior:    readItemStat(data, "under_junior"),
+    highSchool:     readItemStat(data, "high_school"),
+    univ30:         readItemStat(data, "univ_30"),
+    age4050:        readItemStat(data, "age_40_50"),
+    over60:         readItemStat(data, "over_60"),
+    exStudent:      readItemStat(data, "ex_student"),
+    voteInSchool:   readItemStat(data, "vote_in_school"),
+    voteDecoration: readItemStat(data, "vote_decoration"),
   };
 }
 
