@@ -8,8 +8,33 @@ async function isAdmin() {
   return session?.user?.role === "admin";
 }
 
-const NUM  = ["grade","class_num","visitors","visitors_max","ticket","ticket_max","under_junior","under_junior_max","high_school","high_school_max","univ_30","univ_30_max","age_40_50","age_40_50_max","over_60","over_60_max","ex_student","ex_student_max","vote_in_school","vote_in_school_max","vote_decoration","vote_decoration_max","rank_school","rank_school_total","rank_grade","rank_grade_total"];
-const FLOAT = ["total_score","total_max","deviation_school","avg_school","deviation_grade","avg_grade"];
+const NUM = [
+  "grade","class_num",
+  "visitors","visitors_max","visitors_rank_school","visitors_rank_grade",
+  "ticket","ticket_max","ticket_rank_school","ticket_rank_grade",
+  "under_junior","under_junior_max","under_junior_rank_school","under_junior_rank_grade",
+  "high_school","high_school_max","high_school_rank_school","high_school_rank_grade",
+  "univ_30","univ_30_max","univ_30_rank_school","univ_30_rank_grade",
+  "age_40_50","age_40_50_max","age_40_50_rank_school","age_40_50_rank_grade",
+  "over_60","over_60_max","over_60_rank_school","over_60_rank_grade",
+  "ex_student","ex_student_max","ex_student_rank_school","ex_student_rank_grade",
+  "vote_in_school","vote_in_school_max","vote_in_school_rank_school","vote_in_school_rank_grade",
+  "vote_decoration","vote_decoration_max","vote_decoration_rank_school","vote_decoration_rank_grade",
+  "rank_school","rank_school_total","rank_grade","rank_grade_total",
+];
+const FLOAT = [
+  "total_score","total_max","deviation_school","avg_school","deviation_grade","avg_grade",
+  "visitors_deviation_school","visitors_avg_school","visitors_deviation_grade","visitors_avg_grade",
+  "ticket_deviation_school","ticket_avg_school","ticket_deviation_grade","ticket_avg_grade",
+  "under_junior_deviation_school","under_junior_avg_school","under_junior_deviation_grade","under_junior_avg_grade",
+  "high_school_deviation_school","high_school_avg_school","high_school_deviation_grade","high_school_avg_grade",
+  "univ_30_deviation_school","univ_30_avg_school","univ_30_deviation_grade","univ_30_avg_grade",
+  "age_40_50_deviation_school","age_40_50_avg_school","age_40_50_deviation_grade","age_40_50_avg_grade",
+  "over_60_deviation_school","over_60_avg_school","over_60_deviation_grade","over_60_avg_grade",
+  "ex_student_deviation_school","ex_student_avg_school","ex_student_deviation_grade","ex_student_avg_grade",
+  "vote_in_school_deviation_school","vote_in_school_avg_school","vote_in_school_deviation_grade","vote_in_school_avg_grade",
+  "vote_decoration_deviation_school","vote_decoration_avg_school","vote_decoration_deviation_grade","vote_decoration_avg_grade",
+];
 
 export async function GET(req: NextRequest) {
   if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
