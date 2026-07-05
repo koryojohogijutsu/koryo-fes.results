@@ -13,7 +13,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
       {/* ===== ヘッダー ===== */}
       <header className={styles.header}>
         {/* Koryo-fes ロゴ (左) */}
-        
+        <a
           href="https://koryo-fes.studio.site/"
           target="_blank"
           rel="noopener noreferrer"
@@ -62,7 +62,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           {/* 左: Koryo-fes ロゴ */}
-          
+          <a
             href="https://koryo-fes.studio.site/"
             target="_blank"
             rel="noopener noreferrer"
@@ -84,7 +84,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
               個人情報保護への取り組みについて
             </Link>
             <span className={styles.footerDivider} />
-            
+            <a
               href="https://maebashi-hs.gsn.ed.jp/"
               target="_blank"
               rel="noopener noreferrer"
