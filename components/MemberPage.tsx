@@ -26,7 +26,7 @@ function ItemRow({
   rankSchoolTotal?: number; rankGradeTotal?: number;
   alt?: boolean; dashed?: boolean;
 }) {
-  const cls = dashed ? styles.trDashed : alt ? styles.trAlt : styles.tr;
+  const cls = [alt ? styles.trAlt : styles.tr, dashed ? styles.trDashed : ""].filter(Boolean).join(" ");
   return (
     <tr className={cls}>
       <td className={`${styles.td} ${styles.tdLabel}`}>{label}</td>
@@ -127,7 +127,7 @@ export function MemberPage({ session, result, graphs, comments }: Props) {
                     <ItemRow label="紙チケット入場" stat={result.ticket} alt
                       rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
 
-                    {/* 年代別 */}
+                    {/* 年代別（中学生以下の前に点線） */}
                     {[
                       { label: "中学生以下",   stat: result.underJunior },
                       { label: "高校生",       stat: result.highSchool  },
@@ -135,16 +135,15 @@ export function MemberPage({ session, result, graphs, comments }: Props) {
                       { label: "40代・50代",   stat: result.age4050     },
                       { label: "60代以上",     stat: result.over60      },
                     ].map((row, i) => (
-                      <ItemRow key={row.label} label={row.label} stat={row.stat} alt={i % 2 !== 0}
+                      <ItemRow key={row.label} label={row.label} stat={row.stat} alt={i % 2 !== 0} dashed={i === 0}
                         rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
                     ))}
 
-                    {/* 前高生（点線上） */}
-                    <ItemRow label="前高生" stat={result.exStudent} dashed
+                    <ItemRow label="前高生" stat={result.exStudent} alt
                       rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
 
-                    {/* 投票数 */}
-                    <ItemRow label="学年内投票数" stat={result.voteInSchool}
+                    {/* 投票数（学年内投票数の前に点線） */}
+                    <ItemRow label="学年内投票数" stat={result.voteInSchool} dashed
                       rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
                     <ItemRow label="装飾賞投票数" stat={result.voteDecoration} alt
                       rankSchoolTotal={result.rankSchoolTotal} rankGradeTotal={result.rankGradeTotal} />
