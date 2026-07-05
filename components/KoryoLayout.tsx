@@ -3,7 +3,6 @@ import Image from "next/image";
 import styles from "./KoryoLayout.module.css";
 
 interface Props {
-  /** ヘッダーのサブタイトル（例: "ログイン" "個人情報保護への取り組み"）*/
   subtitle?: string;
   children: React.ReactNode;
 }
