@@ -1,5 +1,6 @@
 import { KoryoLayout } from "@/components/KoryoLayout";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./forgetPassword.module.css";
 
 export const metadata = {
@@ -19,6 +20,17 @@ export default function ForgetPassword() {
         <p className={styles.body}>
           【蛟龍祭クラス企画評価】の左下の赤枠を確認してください。
         </p>
+
+        {/* 初期パスワードの位置を示す画像 */}
+        <div className={styles.imgWrap}>
+          <Image
+            src="/paper_example.png"
+            alt="初期パスワードの確認方法（左下の赤枠）"
+            width={600}
+            height={450}
+            className={styles.exampleImg}
+          />
+        </div>
 
         {/* ログイン画面へボタン */}
         <div className={styles.btnWrap}>
