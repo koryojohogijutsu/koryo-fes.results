@@ -83,6 +83,42 @@
   cursor: not-allowed;
 }
 
+/* パスワード入力欄 + 表示切替ボタン */
+.passwordWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrap .input {
+  padding-right: 48px;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 4px;
+  color: #888;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.passwordToggle:hover {
+  color: #555;
+}
+
+.passwordToggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* エラー */
 .errorBox {
   background-color: #fff3f3;
@@ -166,6 +202,15 @@
   .input {
     font-size: 14px;
     padding: 12px 14px;
+  }
+
+  .passwordWrap .input {
+    padding-right: 44px;
+  }
+
+  .passwordToggle svg {
+    width: 20px;
+    height: 20px;
   }
 
   .submitBtn {
