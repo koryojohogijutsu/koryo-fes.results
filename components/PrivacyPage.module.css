@@ -50,9 +50,8 @@
 }
 
 .orderedList > li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0;
+  position: relative;
+  padding-left: 2em;
   margin-top: 10px;
   font-family: "Noto Sans JP", sans-serif;
   font-size: 15px;
@@ -63,9 +62,9 @@
 
 .orderedList > li::before {
   content: counter(section-counter) "\3000"; /* 全角スペースで番号を区切る */
-  flex-shrink: 0;
-  width: 6.4%;
-  min-width: 2em;
+  position: absolute;
+  left: 0;
+  top: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -74,12 +73,11 @@
   padding: 0;
   margin: 8px 0 0 0;
   counter-reset: inner-counter;
-  width: 100%;
 }
 
 .innerList li {
-  display: flex;
-  align-items: flex-start;
+  position: relative;
+  padding-left: 2em;
   margin-top: 6px;
   font-size: 15px;
   color: #000000;
@@ -89,8 +87,9 @@
 
 .innerList li::before {
   content: counter(inner-counter) "\3000";
-  flex-shrink: 0;
-  width: 2em;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .closing {
@@ -126,10 +125,5 @@
     max-width: 100%;
     margin: 0;
     padding: 16px 16px 32px 16px;
-  }
-
-  .orderedList > li::before {
-    width: auto;
-    min-width: 1.5em;
   }
 }
