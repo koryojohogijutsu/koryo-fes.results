@@ -37,7 +37,7 @@ function ItemRow({
       <td className={styles.td}>{stat.deviationGrade ?? "—"}</td>
       <td className={styles.td}>{fmtRank(stat.rankGrade, rankGradeTotal)}</td>
       <td className={styles.td}>{stat.avgGrade ?? "—"}</td>
-      <td className={styles.td}></td>
+      <td className={`${styles.td} ${styles.tdKtz}`}>{stat.ktz ?? "—"}</td>
     </tr>
   );
 }
