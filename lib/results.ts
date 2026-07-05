@@ -1,10 +1,11 @@
 import { supabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabaseAdmin";
 
-// 項目（来場者数・紙チケットなど）ごとの校内/学年の偏差値・順位・平均値
+// 項目（来場者数・紙チケットなど）ごとの校内/学年の偏差値・順位・平均値・KTZ
 export interface ItemStat {
   value?: number;   max?: number;
   deviationSchool?: number; rankSchool?: number; avgSchool?: number;
   deviationGrade?: number;  rankGrade?: number;   avgGrade?: number;
+  ktz?: string;
 }
 
 export interface ClassResult {
@@ -45,6 +46,7 @@ function readItemStat(data: Record<string, unknown>, prefix: string): ItemStat {
     deviationGrade: n(data[`${prefix}_deviation_grade`]),
     rankGrade: n(data[`${prefix}_rank_grade`]),
     avgGrade: n(data[`${prefix}_avg_grade`]),
+    ktz: (data[`${prefix}_ktz`] as string) ?? undefined,
   };
 }
 
