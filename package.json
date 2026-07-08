@@ -14,7 +14,8 @@
     "react": "^19",
     "react-dom": "^19",
     "bcryptjs": "^2.4.3",
-    "@supabase/supabase-js": "^2.45.4"
+    "@supabase/supabase-js": "^2.45.4",
+    "html5-qrcode": "^2.3.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
