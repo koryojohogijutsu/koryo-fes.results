@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { KoryoLayout } from "@/components/KoryoLayout";
+import { QrScanner } from "@/components/QrScanner";
 import styles from "./LoginForm.module.css";
 
 interface Props {
@@ -12,27 +13,36 @@ interface Props {
   callbackUrl: string;
 }
 
+/**
+ * QRコードの文字列を解析してID/パスワードを取り出す
+ * 形式: id=xxx,pass=yyy
+ * 例:   id=0101-kamimura,pass=1234
+ */
+function parseQrCode(text: string): { loginId: string; password: string } | null {
+  const idMatch   = text.match(/id=([^,]+)/);
+  const passMatch = text.match(/,pass=(.+)/);
+  if (!idMatch || !passMatch) return null;
+  return { loginId: idMatch[1].trim(), password: passMatch[1].trim() };
+}
+
 export function LoginForm({ error, callbackUrl }: Props) {
   const router = useRouter();
-  const [loginId, setLoginId] = useState("");
+
+  const [loginId,  setLoginId]  = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading,  setLoading]  = useState(false);
+  const [showQr,   setShowQr]   = useState(false);
   const [authError, setAuthError] = useState(
     error === "CredentialsSignin" ? "IDまたはパスワードが間違っています" : ""
   );
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!loginId || !password) {
-      setAuthError("ログインIDとパスワードを入力してください");
-      return;
-    }
+  // 共通ログイン処理
+  async function doLogin(id: string, pass: string) {
     setLoading(true);
     setAuthError("");
     const res = await signIn("credentials", {
-      loginId,
-      password,
+      loginId: id,
+      password: pass,
       redirect: false,
       callbackUrl,
     });
@@ -44,9 +54,41 @@ export function LoginForm({ error, callbackUrl }: Props) {
     }
   }
 
+  // フォーム送信
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!loginId || !password) {
+      setAuthError("ログインIDとパスワードを入力してください");
+      return;
+    }
+    await doLogin(loginId, password);
+  }
+
+  // QRスキャン成功
+  const handleScan = useCallback(async (text: string) => {
+    setShowQr(false);
+    const parsed = parseQrCode(text);
+    if (!parsed) {
+      setAuthError("QRコードの形式が正しくありません（id=...,pass=... の形式が必要です）");
+      return;
+    }
+    // フォームにも反映しておく（視認性のため）
+    setLoginId(parsed.loginId);
+    setPassword(parsed.password);
+    await doLogin(parsed.loginId, parsed.password);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <KoryoLayout subtitle="ログイン">
-      {/* ===== メインカード ===== */}
+      {/* QRスキャナーオーバーレイ */}
+      {showQr && (
+        <QrScanner
+          onScan={handleScan}
+          onClose={() => setShowQr(false)}
+        />
+      )}
+
+      {/* メインカード */}
       <div className={styles.card}>
         <form onSubmit={handleSubmit} noValidate className={styles.form}>
 
@@ -61,15 +103,13 @@ export function LoginForm({ error, callbackUrl }: Props) {
           <div className={styles.field}>
             <div className={styles.labelRow}>
               <span className={styles.labelBar} />
-              <label htmlFor="loginId" className={styles.label}>
-                ログインID
-              </label>
+              <label htmlFor="loginId" className={styles.label}>ログインID</label>
             </div>
             <input
               id="loginId"
               type="text"
               value={loginId}
-              onChange={(e) => setLoginId(e.target.value)}
+              onChange={e => setLoginId(e.target.value)}
               className={styles.input}
               placeholder="KORYO0123456789 または ぐんまスクールネットのメールアドレス"
               autoComplete="username"
@@ -81,53 +121,34 @@ export function LoginForm({ error, callbackUrl }: Props) {
           <div className={styles.field}>
             <div className={styles.labelRow}>
               <span className={styles.labelBar} />
-              <label htmlFor="password" className={styles.label}>
-                パスワード
-              </label>
+              <label htmlFor="password" className={styles.label}>パスワード</label>
             </div>
-            <div className={styles.passwordWrap}>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={styles.input}
-                placeholder="【クラス企画評価】に記載されているパスワード"
-                autoComplete="current-password"
-                disabled={loading}
-              />
-              <button
-                type="button"
-                className={styles.passwordToggle}
-                onClick={() => setShowPassword((v) => !v)}
-                disabled={loading}
-                aria-label={showPassword ? "パスワードを非表示にする" : "パスワードを表示する"}
-                aria-pressed={showPassword}
-              >
-                {showPassword ? (
-                  // 目（表示中）
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                ) : (
-                  // 目に斜線（非表示中）
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className={styles.input}
+              placeholder="【クラス企画評価】に記載されているパスワード"
+              autoComplete="current-password"
+              disabled={loading}
+            />
           </div>
 
           {/* ログインボタン */}
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? "ログイン中..." : "ログイン"}
+          </button>
+
+          {/* QRログインボタン */}
           <button
-            type="submit"
-            className={styles.submitBtn}
+            type="button"
+            className={styles.qrBtn}
+            onClick={() => { setAuthError(""); setShowQr(true); }}
             disabled={loading}
           >
-            {loading ? "ログイン中..." : "ログイン"}
+            <CameraIcon />
+            QRコードでログイン
           </button>
 
           {/* パスワードを忘れた方 */}
@@ -141,5 +162,16 @@ export function LoginForm({ error, callbackUrl }: Props) {
         </form>
       </div>
     </KoryoLayout>
+  );
+}
+
+function CameraIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0 }}>
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </svg>
   );
 }
