@@ -4,13 +4,9 @@ import { redirect } from "next/navigation";
 import { MemberPage } from "@/components/MemberPage";
 import { getClassResult, getGraphUrls, getVisitorComments } from "@/lib/results";
 
-// セッションのroleで振り分け、かつ結果データも都度取得するため、
-// キャッシュさせず毎回動的にレンダリングする
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-export const fetchCache = "force-no-store";
-
 export const metadata = { title: "評価結果｜蛟龍祭クラス企画評価" };
+
+export const dynamic = "force-dynamic";
 
 export default async function Member() {
   const session = await getServerSession(authOptions);
