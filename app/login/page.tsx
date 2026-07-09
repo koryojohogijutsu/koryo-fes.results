@@ -3,6 +3,11 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/LoginForm";
 
+// セッションの有無で表示/リダイレクトを切り替えるため、キャッシュさせず毎回動的にレンダリングする
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export const metadata = {
   title: "蛟龍祭 ログイン画面｜第60回蛟龍祭 実行委員会",
 };
