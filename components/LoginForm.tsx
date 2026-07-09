@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { KoryoLayout } from "@/components/KoryoLayout";
 import { QrScanner } from "@/components/QrScanner";
@@ -26,8 +25,6 @@ function parseQrCode(text: string): { loginId: string; password: string } | null
 }
 
 export function LoginForm({ error, callbackUrl }: Props) {
-  const router = useRouter();
-
   const [loginId,  setLoginId]  = useState("");
   const [password, setPassword] = useState("");
   const [loading,  setLoading]  = useState(false);
@@ -50,7 +47,13 @@ export function LoginForm({ error, callbackUrl }: Props) {
     if (res?.error) {
       setAuthError("IDまたはパスワードが間違っています");
     } else if (res?.url) {
-      router.push(res.url);
+      // router.push だと Next.js のクライアント側キャッシュ(Router Cache)が
+      // 残っていて、共有端末で別のアカウントに切り替えた際に
+      // 前のユーザーのページ(管理者画面など)やログイン前の状態が
+      // そのまま表示されてしまうことがある。
+      // ブラウザの通常遷移にすることでキャッシュを使わず、
+      // サーバーで最新のセッションを見て振り分けさせる。
+      window.location.href = res.url;
     }
   }
 
