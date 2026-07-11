@@ -47,12 +47,6 @@ export function LoginForm({ error, callbackUrl }: Props) {
     if (res?.error) {
       setAuthError("IDまたはパスワードが間違っています");
     } else if (res?.url) {
-      // router.push だと Next.js のクライアント側キャッシュ(Router Cache)が
-      // 残っていて、共有端末で別のアカウントに切り替えた際に
-      // 前のユーザーのページ(管理者画面など)やログイン前の状態が
-      // そのまま表示されてしまうことがある。
-      // ブラウザの通常遷移にすることでキャッシュを使わず、
-      // サーバーで最新のセッションを見て振り分けさせる。
       window.location.href = res.url;
     }
   }
@@ -72,7 +66,7 @@ export function LoginForm({ error, callbackUrl }: Props) {
     setShowQr(false);
     const parsed = parseQrCode(text);
     if (!parsed) {
-      setAuthError("QRコードの形式が正しくありません（id=...,pass=... の形式が必要です）");
+      setAuthError("QRコードの形式が正しくありません");
       return;
     }
     // フォームにも反映しておく（視認性のため）
@@ -114,7 +108,7 @@ export function LoginForm({ error, callbackUrl }: Props) {
               value={loginId}
               onChange={e => setLoginId(e.target.value)}
               className={styles.input}
-              placeholder="KORYO0123456789 または ぐんまスクールネットのメールアドレス"
+              placeholder="0000-koryo"
               autoComplete="username"
               disabled={loading}
             />
@@ -132,7 +126,7 @@ export function LoginForm({ error, callbackUrl }: Props) {
               value={password}
               onChange={e => setPassword(e.target.value)}
               className={styles.input}
-              placeholder="【クラス企画評価】に記載されているパスワード"
+              placeholder="【クラス企画成績表】に記載されているパスワード"
               autoComplete="current-password"
               disabled={loading}
             />
@@ -151,7 +145,7 @@ export function LoginForm({ error, callbackUrl }: Props) {
             disabled={loading}
           >
             <CameraIcon />
-            QRコードでログイン
+            二次元コードでログイン
           </button>
 
           {/* パスワードを忘れた方 */}
