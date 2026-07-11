@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "蛟龍祭クラス企画評価",
-  description: "第60回蛟龍祭 クラス企画評価システム",
+  title: "蛟龍祭クラス企画成績表",
+  description: "第60回蛟龍祭 KOSクラス企画評価システム",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
