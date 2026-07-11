@@ -4,18 +4,18 @@ import Image from "next/image";
 import styles from "./forgetPassword.module.css";
 
 export const metadata = {
-  title: "パスワード確認・再設定｜蛟龍祭クラス企画評価",
+  title: "パスワード確認｜蛟龍祭クラス企画成績表",
 };
 
 export default function ForgetPassword() {
   return (
-    <KoryoLayout subtitle="パスワード確認方法・パスワード再設定">
+    <KoryoLayout subtitle="パスワード確認方法">
       <div className={styles.card}>
 
         {/* ── セクション1: パスワード確認方法 ── */}
         <div className={styles.sectionHeader}>
           <span className={styles.sectionBar} />
-          <h2 className={styles.sectionTitle}>パスワード確認方法（初期パスワード）</h2>
+          <h2 className={styles.sectionTitle}>パスワード確認方法</h2>
         </div>
         <p className={styles.body}>
           【蛟龍祭クラス企画評価】の左下の赤枠を確認してください。
