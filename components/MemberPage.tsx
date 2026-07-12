@@ -222,9 +222,6 @@ export function MemberPage({ session, result, graphs, comments }: Props) {
                           </div>
                         );
                       })}
-                      <p className={styles.commentDate}>
-                        {new Date(c.createdAt).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}
-                      </p>
                     </div>
                   </li>
                 ))}
