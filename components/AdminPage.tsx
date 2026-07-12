@@ -356,7 +356,6 @@ export function AdminPage() {
                       );
                     })}
                     <div className={styles.cmtMeta}>
-                      <span className={styles.cmtDate}>{new Date(c.created_at).toLocaleDateString("ja-JP")}</span>
                       <button className={styles.delBtn} onClick={() => delCmt(c.id)}>削除</button>
                     </div>
                   </li>
