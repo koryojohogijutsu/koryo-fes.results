@@ -145,7 +145,7 @@ export function LoginForm({ error, callbackUrl }: Props) {
             disabled={loading}
           >
             <CameraIcon />
-            QRコードでログイン
+            2次元コードでログイン
           </button>
 
           {/* パスワードを忘れた方 */}
