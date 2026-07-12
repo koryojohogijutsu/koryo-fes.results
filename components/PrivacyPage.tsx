@@ -21,13 +21,7 @@ export function PrivacyPage() {
           </p>
         </Section>
 
-        <Section title="第２条　個人情報の収集方法">
-          <p>
-            当委員会は、ユーザーとして登録するためにメールアドレスを使用しており、蛟龍祭開催時に収集したぐんまスクールネットのメールアドレスである。新規ユーザーとして登録するためにメールアドレスを尋ねる。
-          </p>
-        </Section>
-
-        <Section title="第３条　個人情報を収集・利用する目的">
+        <Section title="第２条　個人情報を収集・利用する目的">
           <p>当委員会が個人情報を収集・利用する目的は以下の通りである。</p>
           <ol className={styles.orderedList}>
             <li>当委員会サービスの提供・運営のため</li>
@@ -39,14 +33,14 @@ export function PrivacyPage() {
           </ol>
         </Section>
 
-        <Section title="第４条　利用目的の変更">
+        <Section title="第３条　利用目的の変更">
           <ol className={styles.orderedList}>
             <li>当委員会は、利用目的が変更前と関連性を有すると合理的に認められる場合に限り、個人情報の利用目的を変更するものとする。</li>
             <li>利用目的の変更を行った場合には、変更後の目的について、当委員会所定の方法により、ユーザーに通知し、または本ウェブサイト上に公表するものとする。</li>
           </ol>
         </Section>
 
-        <Section title="第５条　個人情報の第三者提供">
+        <Section title="第４条　個人情報の第三者提供">
           <ol className={styles.orderedList}>
             <li>当委員会は、あらかじめユーザーの同意を得ることなく、第三者に個人情報を提供することはない。ただし、個人情報保護法その他の法令で認められる場合を除く。</li>
             <li>
@@ -58,7 +52,7 @@ export function PrivacyPage() {
           </ol>
         </Section>
 
-        <Section title="第６条　個人情報の開示">
+        <Section title="第５条　個人情報の開示">
           <ol className={styles.orderedList}>
             <li>
               当委員会は、本人から個人情報の開示を求められたときは、本人に対し、遅滞なくこれを開示する。ただし、開示することにより次のいずれかに該当する場合は、その全部または一部を開示しないこともあり、開示しない決定をした場合には、その旨を遅滞なく通知する。
@@ -71,7 +65,7 @@ export function PrivacyPage() {
           </ol>
         </Section>
 
-        <Section title="第７条　個人情報の訂正及び削除">
+        <Section title="第６条　個人情報の訂正及び削除">
           <ol className={styles.orderedList}>
             <li>ユーザーは、当委員会の保有する自己の個人情報が誤った情報である場合には、当委員会が定める手続きにより、当委員会に対して個人情報の訂正、追加または削除（以下、「訂正等」という）を請求することができる。</li>
             <li>当委員会は、ユーザーから前項の請求を受けてその請求に応じる必要があると判断した場合には、遅滞なく、当該個人情報の訂正等を行うものとする。</li>
@@ -79,7 +73,7 @@ export function PrivacyPage() {
           </ol>
         </Section>
 
-        <Section title="第８条　個人情報の利用停止等">
+        <Section title="第７条　個人情報の利用停止等">
           <ol className={styles.orderedList}>
             <li>当委員会は、本人から、個人情報が、利用目的の範囲を超えて取り扱われているという理由、または不正の手段により取得されたものであるという理由により、その利用の停止または消去（以下、「利用停止等」という）を求められた場合には、遅滞なく必要な調査を行う。</li>
             <li>前項の調査結果に基づき、その請求に応じる必要があると判断した場合には、遅滞なく、当該個人情報の利用停止等を行う。</li>
@@ -88,7 +82,7 @@ export function PrivacyPage() {
           </ol>
         </Section>
 
-        <Section title="第９条　プライバシーポリシーの変更">
+        <Section title="第８条　プライバシーポリシーの変更">
           <ol className={styles.orderedList}>
             <li>本ポリシーの内容は、法令その他本ポリシーに別段の定めのある事項を除いて、ユーザーに通知することなく、変更することができるものとする。</li>
             <li>当委員会が別途定める場合を除いて、変更後のプライバシーポリシーは、本ウェブサイトに掲載したときから効力を生じるものとする。</li>
