@@ -7,35 +7,68 @@ interface Props {
   onClose: () => void;
 }
 
+type Html5QrcodeInstance = {
+  start: (...args: unknown[]) => Promise<void>;
+  stop: () => Promise<void>;
+  clear: () => void;
+  getState?: () => number;
+};
+
 export function QrScanner({ onScan, onClose }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scannerRef   = useRef<unknown>(null);
+  const scannerRef    = useRef<Html5QrcodeInstance | null>(null);
+  const isRunningRef   = useRef(false); // start()が成功し、まだstopしていないか
+  const isStoppingRef  = useRef(false); // stop()の多重実行防止
 
   useEffect(() => {
-    let stopped = false;
+    let cancelled = false;
+
+    // 実行中の場合のみ安全にstopする
+    async function safeStop() {
+      if (isStoppingRef.current || !isRunningRef.current) return;
+      isStoppingRef.current = true;
+      const scanner = scannerRef.current;
+      isRunningRef.current = false;
+      try {
+        if (scanner) {
+          await scanner.stop();
+          scanner.clear();
+        }
+      } catch {
+        // 既に停止済み・非対応状態などは無視
+      } finally {
+        isStoppingRef.current = false;
+      }
+    }
 
     async function start() {
       // 動的インポートでSSRエラーを回避
       const { Html5Qrcode } = await import("html5-qrcode");
 
-      if (stopped || !containerRef.current) return;
+      if (cancelled || !containerRef.current) return;
 
-      const scanner = new Html5Qrcode("qr-reader");
+      const scanner = new Html5Qrcode("qr-reader") as Html5QrcodeInstance;
       scannerRef.current = scanner;
 
       try {
         await scanner.start(
           { facingMode: "environment" },   // 背面カメラを優先
           { fps: 10, qrbox: { width: 250, height: 250 } },
-          (decodedText) => {
+          (decodedText: string) => {
             // スキャン成功 → 停止してコールバック
-            scanner.stop().catch(() => {});
-            onScan(decodedText);
+            safeStop().finally(() => onScan(decodedText));
           },
           () => {} // エラーは無視（QRが見つからない間は常に呼ばれるため）
         );
+        if (cancelled) {
+          // start完了までにアンマウントされていた場合は即停止
+          safeStop();
+          return;
+        }
+        isRunningRef.current = true;
       } catch {
         // カメラ許可拒否などはクローズで対応
+        isRunningRef.current = false;
         onClose();
       }
     }
@@ -43,9 +76,8 @@ export function QrScanner({ onScan, onClose }: Props) {
     start();
 
     return () => {
-      stopped = true;
-      const s = scannerRef.current as { stop?: () => Promise<void> } | null;
-      s?.stop?.().catch(() => {});
+      cancelled = true;
+      safeStop();
     };
   }, [onScan, onClose]);
 
