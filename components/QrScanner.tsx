@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   onScan: (text: string) => void;
@@ -19,6 +19,9 @@ export function QrScanner({ onScan, onClose }: Props) {
   const scannerRef    = useRef<Html5QrcodeInstance | null>(null);
   const isRunningRef   = useRef(false); // start()が成功し、まだstopしていないか
   const isStoppingRef  = useRef(false); // stop()の多重実行防止
+
+  // true: カメラ許可待ち（まだ映像が始まっていない）
+  const [waitingPermission, setWaitingPermission] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,7 +61,7 @@ export function QrScanner({ onScan, onClose }: Props) {
             // スキャン成功 → 停止してコールバック
             safeStop().finally(() => onScan(decodedText));
           },
-          () => {} // エラーは無視（QRが見つからない間は常に呼ばれるため）
+          () => {} // エラーは無視（2次元コードが見つからない間は常に呼ばれるため）
         );
         if (cancelled) {
           // start完了までにアンマウントされていた場合は即停止
@@ -66,6 +69,7 @@ export function QrScanner({ onScan, onClose }: Props) {
           return;
         }
         isRunningRef.current = true;
+        setWaitingPermission(false); // カメラ映像が始まったので注意書きを消す
       } catch {
         // カメラ許可拒否などはクローズで対応
         isRunningRef.current = false;
@@ -92,7 +96,7 @@ export function QrScanner({ onScan, onClose }: Props) {
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 15, fontWeight: 700, margin: 0 }}>
-            QRコードをかざしてください
+            2次元コードをかざしてください
           </p>
           <button
             onClick={onClose}
@@ -104,12 +108,14 @@ export function QrScanner({ onScan, onClose }: Props) {
         </div>
         {/* html5-qrcode はこのIDのdivにカメラ映像を描画する */}
         <div id="qr-reader" ref={containerRef} style={{ width: "100%" }} />
-        <p style={{
-          fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: "#888",
-          textAlign: "center", marginTop: 12,
-        }}>
-          カメラの使用を許可してください
-        </p>
+        {waitingPermission && (
+          <p style={{
+            fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: "#888",
+            textAlign: "center", marginTop: 12,
+          }}>
+            カメラの使用を許可してください
+          </p>
+        )}
       </div>
     </div>
   );
