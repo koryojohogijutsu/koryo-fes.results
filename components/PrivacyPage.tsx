@@ -61,7 +61,7 @@ export function PrivacyPage() {
           </ol>
         </Section>
 
-        <Section title="第７条　サイトポリシーの変更">
+        <Section title="第７条　サービスポリシーの変更">
           <ol className={styles.orderedList}>
             <li>本ポリシーの内容は、法令その他本ポリシーに別段の定めのある事項を除いて、ユーザーに通知することなく、変更することができるものとする。</li>
             <li>当委員会が別途定める場合を除いて、変更後のサービスポリシーは、本ウェブサイトに掲載したときから効力を生じるものとする。</li>
