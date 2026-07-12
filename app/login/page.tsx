@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/LoginForm";
 
 export const metadata = {
-  title: "蛟龍祭 ログイン画面｜第60回蛟龍祭 実行委員会",
+  title: "蛟龍祭クラス企画評価 ログイン画面｜第60回蛟龍祭 実行委員会",
 };
 
 export const dynamic = "force-dynamic";
