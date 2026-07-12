@@ -18,7 +18,7 @@ export default function ForgetPassword() {
           <h2 className={styles.sectionTitle}>パスワード確認方法</h2>
         </div>
         <p className={styles.body}>
-          【蛟龍祭クラス企画評価】の左下の赤枠を確認してください。
+          【蛟龍祭クラス企画成績表】の左下の赤枠を確認してください。
         </p>
 
         {/* 初期パスワードの位置を示す画像 */}
