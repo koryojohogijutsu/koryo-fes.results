@@ -81,7 +81,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
           {/* 右: リンク群 */}
           <div className={styles.footerLinks}>
             <Link href="/privacypolicy" className={styles.footerLink}>
-              個人情報保護への取り組みについて
+              ご利用にあたって（サービスポリシー）
             </Link>
             <span className={styles.footerDivider} />
             <a
