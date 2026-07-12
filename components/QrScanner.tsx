@@ -8,7 +8,7 @@ interface Props {
 }
 
 type Html5QrcodeInstance = {
-  start: (...args: unknown[]) => Promise<void>;
+  start: (...args: unknown[]) => Promise<null>;
   stop: () => Promise<void>;
   clear: () => void;
   getState?: () => number;
@@ -47,7 +47,7 @@ export function QrScanner({ onScan, onClose }: Props) {
 
       if (cancelled || !containerRef.current) return;
 
-      const scanner = new Html5Qrcode("qr-reader") as Html5QrcodeInstance;
+      const scanner = new Html5Qrcode("qr-reader") as unknown as Html5QrcodeInstance;
       scannerRef.current = scanner;
 
       try {
