@@ -52,7 +52,7 @@ export function PrivacyPage() {
           <p>当委員会本部 E-mail：honbu.koryo.fes@gmail.com</p>
         </Section>
 
-        <Section title="第６条　ログイン情報の不正取得の対応について">
+        <Section title="第６条　ログイン情報の不正取得の対応">
           <ol className={styles.orderedList}>
             <li>当委員会は、ユーザーが不正の手段により他クラス等のログイン情報を取得した虞がある場合には、必要な調査を行う。</li>
             <li>前項の調査結果に基づき、不正な手段による情報取得が認定されたと判断した場合には、遅滞なく当該クラス等のログイン情報の変更や利用の一時停止等のセキュリティ保護を目的とする措置を行う。</li>
