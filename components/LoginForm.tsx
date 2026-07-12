@@ -66,7 +66,7 @@ export function LoginForm({ error, callbackUrl }: Props) {
     setShowQr(false);
     const parsed = parseQrCode(text);
     if (!parsed) {
-      setAuthError("QRコードの形式が正しくありません");
+      setAuthError("2次元コードの形式が正しくありません");
       return;
     }
     // フォームにも反映しておく（視認性のため）
