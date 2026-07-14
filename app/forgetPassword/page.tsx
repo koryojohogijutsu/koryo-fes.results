@@ -1,4 +1,5 @@
 import { KoryoLayout } from "@/components/KoryoLayout";
+import { ViewTracker } from "@/components/ViewTracker";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./forgetPassword.module.css";
@@ -10,6 +11,7 @@ export const metadata = {
 export default function ForgetPassword() {
   return (
     <KoryoLayout subtitle="パスワード確認方法">
+      <ViewTracker page="forgetPassword" />
       <div className={styles.card}>
 
         {/* ── セクション1: パスワード確認方法 ── */}
