@@ -2,6 +2,7 @@ import { Session } from "next-auth";
 import { ClassResult, GraphUrls, VisitorComment, ItemStat } from "@/lib/results";
 import { COMMENT_QUESTIONS } from "@/lib/commentQuestions";
 import { LogoutButton } from "./LogoutButton";
+import { ViewTracker } from "./ViewTracker";
 import Image from "next/image";
 import styles from "./MemberPage.module.css";
 
@@ -47,6 +48,7 @@ export function MemberPage({ session, result, graphs, comments }: Props) {
 
   return (
     <div className={styles.page}>
+      <ViewTracker page="member" classId={session.user?.classId ?? undefined} />
 
       {/* ヘッダー */}
       <header className={styles.header}>
