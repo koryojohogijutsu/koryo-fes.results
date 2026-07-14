@@ -1,9 +1,11 @@
 import { KoryoLayout } from "@/components/KoryoLayout";
+import { ViewTracker } from "@/components/ViewTracker";
 import styles from "./PrivacyPage.module.css";
 
 export function PrivacyPage() {
   return (
     <KoryoLayout subtitle="ご利用にあたって">
+      <ViewTracker page="privacypolicy" />
       <div className={styles.card}>
         {/* ページタイトル */}
         <div className={styles.pageTitleBlock}>
