@@ -133,7 +133,7 @@ const FIELDS = [
 const SECTIONS = ["基本情報","総合","来場者数","年代別","投票","校内","学年"] as const;
 
 export function AdminPage() {
-  const [tab, setTab]           = useState<"result"|"graph"|"comment">("result");
+  const [tab, setTab]           = useState<"result"|"graph"|"comment"|"views">("result");
   const [classes, setClasses]   = useState<ClassOption[]>([]);
   const [selClass, setSelClass] = useState("");
   const year = 2026;
@@ -150,6 +150,31 @@ export function AdminPage() {
   const [newCmt, setNewCmt]   = useState<Record<string, string>>({ q1: "", q2: "", q3: "" });
   const [cmts, setCmts]       = useState<{id:string;q1?:string;q2?:string;q3?:string;created_at:string}[]>([]);
   const [cmtMsg, setCmtMsg]   = useState("");
+
+  // 閲覧数（PV / UU）
+  const [viewMode, setViewMode]   = useState<"pv"|"uv">("pv");
+  const [byClassViews, setByClassViews] = useState<Record<string, { pv: number; uv: number }>>({});
+  const [siteViews, setSiteViews] = useState<Record<string, { pv: number; uv: number }>>({
+    privacypolicy: { pv: 0, uv: 0 },
+    forgetPassword: { pv: 0, uv: 0 },
+    schoolGuideClick: { pv: 0, uv: 0 },
+  });
+  const [viewsMsg, setViewsMsg] = useState("");
+
+  const loadViews = useCallback(() => {
+    setViewsMsg("");
+    fetch(`/api/admin/pageviews?year=${year}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.error) { setViewsMsg(`❌ ${d.error}`); return; }
+        setByClassViews(d.byClass ?? {});
+        setSiteViews(p => ({ ...p, ...(d.site ?? {}) }));
+      })
+      .catch(() => setViewsMsg("❌ 通信エラー"));
+  }, [year]);
+
+  useEffect(() => { if (tab === "views") loadViews(); }, [tab, loadViews]);
+
 
   // クラス一覧
   useEffect(() => {
@@ -260,9 +285,9 @@ export function AdminPage() {
 
           {/* タブ */}
           <div className={styles.tabBar}>
-            {(["result","graph","comment"] as const).map(t => (
+            {(["result","graph","comment","views"] as const).map(t => (
               <button key={t} className={`${styles.tab} ${tab===t?styles.tabActive:""}`} onClick={() => setTab(t)}>
-                {{ result:"📊 成績データ", graph:"🖼 グラフ画像", comment:"💬 来場者コメント" }[t]}
+                {{ result:"📊 成績データ", graph:"🖼 グラフ画像", comment:"💬 来場者コメント", views:"📈 閲覧数" }[t]}
               </button>
             ))}
           </div>
@@ -361,6 +386,78 @@ export function AdminPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {/* ── 閲覧数 ── */}
+          {tab === "views" && (
+            <div className={styles.card}>
+              <div className={styles.viewsHeadRow}>
+                <h2 className={styles.cardTtl}>ページ閲覧数</h2>
+                <div className={styles.viewToggle}>
+                  <button
+                    className={`${styles.toggleBtn} ${viewMode==="pv" ? styles.toggleBtnActive : ""}`}
+                    onClick={() => setViewMode("pv")}
+                  >
+                    閲覧数（PV）
+                  </button>
+                  <button
+                    className={`${styles.toggleBtn} ${viewMode==="uv" ? styles.toggleBtnActive : ""}`}
+                    onClick={() => setViewMode("uv")}
+                  >
+                    訪問者数（UU）
+                  </button>
+                </div>
+              </div>
+              <p className={styles.cardSub}>
+                PV＝ページが開かれた回数の合計、UU＝ブラウザ単位でのユニーク訪問者数（同じ端末での再訪問は1件とカウント）。
+              </p>
+              {viewsMsg && <p className={styles.err}>{viewsMsg}</p>}
+
+              <h3 className={styles.fieldGroupTtl}>クラスごとの成績ページ閲覧数</h3>
+              <table className={styles.viewsTable}>
+                <thead>
+                  <tr>
+                    <th>クラス</th>
+                    <th>{viewMode === "pv" ? "閲覧数（PV）" : "訪問者数（UU）"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classes.map(c => {
+                    const v = byClassViews[c.id] ?? { pv: 0, uv: 0 };
+                    return (
+                      <tr key={c.id}>
+                        <td>{c.name}（{c.id}）</td>
+                        <td>{viewMode === "pv" ? v.pv : v.uv}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+
+              <h3 className={styles.fieldGroupTtl} style={{ marginTop: 24 }}>サイト全体のページ閲覧数</h3>
+              <table className={styles.viewsTable}>
+                <thead>
+                  <tr>
+                    <th>ページ</th>
+                    <th>{viewMode === "pv" ? "閲覧数（PV）" : "訪問者数（UU）"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>サービスポリシー（プライバシーページ）</td>
+                    <td>{viewMode === "pv" ? siteViews.privacypolicy.pv : siteViews.privacypolicy.uv}</td>
+                  </tr>
+                  <tr>
+                    <td>パスワードを忘れた場合のページ</td>
+                    <td>{viewMode === "pv" ? siteViews.forgetPassword.pv : siteViews.forgetPassword.uv}</td>
+                  </tr>
+                  <tr>
+                    <td>高校案内リンク クリック数</td>
+                    <td>{viewMode === "pv" ? siteViews.schoolGuideClick.pv : siteViews.schoolGuideClick.uv}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           )}
         </div>
