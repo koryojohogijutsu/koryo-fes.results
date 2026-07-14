@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./KoryoLayout.module.css";
+import { trackPageView } from "@/lib/pageViews";
 
 interface Props {
   subtitle?: string;
@@ -89,6 +92,7 @@ export function KoryoLayout({ subtitle, children }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               className={styles.footerLink}
+              onClick={() => trackPageView("schoolGuideClick")}
             >
               高校案内
             </a>
