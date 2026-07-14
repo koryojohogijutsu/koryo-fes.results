@@ -59,4 +59,17 @@
 .footer { background:#fff; border-top:1px solid #eee; padding:12px 24px; flex-shrink:0; }
 .copyright { font-size:12px; color:#888; }
 
+.viewsHeadRow { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:6px; }
+.viewToggle { display:flex; border:1px solid #8cd15c; border-radius:20px; overflow:hidden; }
+.toggleBtn { padding:6px 18px; font-size:13px; font-weight:700; color:#8cd15c; background:#fff; border:none; cursor:pointer; font-family:inherit; }
+.toggleBtn:hover { background:#e8f8d8; }
+.toggleBtnActive { background:#8cd15c; color:#fff; }
+.toggleBtnActive:hover { background:#8cd15c; }
+
+.viewsTable { width:100%; border-collapse:collapse; margin-bottom:8px; }
+.viewsTable th, .viewsTable td { padding:8px 12px; font-size:13px; text-align:left; border-bottom:1px solid #eee; }
+.viewsTable th { color:#555; background:#f7f7f7; font-weight:700; }
+.viewsTable tr:hover td { background:#fbfbfb; }
+
+
 @media screen and (max-width:640px) { .grid { grid-template-columns:1fr; } }
