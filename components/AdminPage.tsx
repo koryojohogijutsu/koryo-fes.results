@@ -153,6 +153,9 @@ export function AdminPage() {
 
   // 閲覧数（PV / UU）
   const [viewMode, setViewMode]   = useState<"pv"|"uv">("pv");
+  const [viewsYear, setViewsYear]   = useState<number>(year);
+  const [viewsMonth, setViewsMonth] = useState<number | null>(null); // null = その年の合計
+  const [availableMonths, setAvailableMonths] = useState<{ year: number; month: number }[]>([]);
   const [byClassViews, setByClassViews] = useState<Record<string, { pv: number; uv: number }>>({});
   const [siteViews, setSiteViews] = useState<Record<string, { pv: number; uv: number }>>({
     privacypolicy: { pv: 0, uv: 0 },
@@ -163,17 +166,29 @@ export function AdminPage() {
 
   const loadViews = useCallback(() => {
     setViewsMsg("");
-    fetch(`/api/admin/pageviews?year=${year}`)
+    const q = new URLSearchParams({ year: String(viewsYear) });
+    if (viewsMonth !== null) q.set("month", String(viewsMonth));
+    fetch(`/api/admin/pageviews?${q.toString()}`)
       .then(r => r.json())
       .then(d => {
         if (d.error) { setViewsMsg(`❌ ${d.error}`); return; }
         setByClassViews(d.byClass ?? {});
         setSiteViews(p => ({ ...p, ...(d.site ?? {}) }));
+        setAvailableMonths(d.months ?? []);
       })
       .catch(() => setViewsMsg("❌ 通信エラー"));
-  }, [year]);
+  }, [viewsYear, viewsMonth]);
 
   useEffect(() => { if (tab === "views") loadViews(); }, [tab, loadViews]);
+
+  // 選択中の年に存在する月だけを候補にする
+  const monthOptionsForYear = availableMonths
+    .filter(m => m.year === viewsYear)
+    .map(m => m.month)
+    .sort((a, b) => a - b);
+
+  const availableYears = Array.from(new Set(availableMonths.map(m => m.year))).sort((a, b) => b - a);
+  if (availableYears.length === 0) availableYears.push(viewsYear);
 
 
   // クラス一覧
@@ -412,6 +427,31 @@ export function AdminPage() {
               <p className={styles.cardSub}>
                 PV＝ページが開かれた回数の合計、UU＝ブラウザ単位でのユニーク訪問者数（同じ端末での再訪問は1件とカウント）。
               </p>
+
+              <div className={styles.viewsFilterRow}>
+                <label className={styles.viewsFilterLabel}>
+                  年
+                  <select
+                    className={styles.viewsSelect}
+                    value={viewsYear}
+                    onChange={e => { setViewsYear(Number(e.target.value)); setViewsMonth(null); }}
+                  >
+                    {availableYears.map(y => <option key={y} value={y}>{y}年</option>)}
+                  </select>
+                </label>
+                <label className={styles.viewsFilterLabel}>
+                  月
+                  <select
+                    className={styles.viewsSelect}
+                    value={viewsMonth ?? "all"}
+                    onChange={e => setViewsMonth(e.target.value === "all" ? null : Number(e.target.value))}
+                  >
+                    <option value="all">年間合計</option>
+                    {monthOptionsForYear.map(m => <option key={m} value={m}>{m}月</option>)}
+                  </select>
+                </label>
+              </div>
+
               {viewsMsg && <p className={styles.err}>{viewsMsg}</p>}
 
               <h3 className={styles.fieldGroupTtl}>クラスごとの成績ページ閲覧数</h3>
