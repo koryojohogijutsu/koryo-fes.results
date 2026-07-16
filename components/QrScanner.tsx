@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface Props {
   onScan: (text: string) => void;
@@ -11,38 +11,43 @@ type Html5QrcodeInstance = {
   start: (...args: unknown[]) => Promise<null>;
   stop: () => Promise<void>;
   clear: () => void;
+  scanFile: (imageFile: File, showImage?: boolean) => Promise<string>;
   getState?: () => number;
 };
 
 export function QrScanner({ onScan, onClose }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const scannerRef    = useRef<Html5QrcodeInstance | null>(null);
-  const isRunningRef   = useRef(false); // start()が成功し、まだstopしていないか
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const fileInputRef  = useRef<HTMLInputElement>(null);
+  const scannerRef     = useRef<Html5QrcodeInstance | null>(null);
+  const isRunningRef   = useRef(false); // カメラのstart()が成功し、まだstopしていないか
   const isStoppingRef  = useRef(false); // stop()の多重実行防止
 
   // true: カメラ許可待ち（まだ映像が始まっていない）
   const [waitingPermission, setWaitingPermission] = useState(true);
+  // 写真からの読み取り中フラグ・エラーメッセージ
+  const [isReadingFile, setIsReadingFile] = useState(false);
+  const [fileError, setFileError] = useState("");
+
+  // 実行中の場合のみ安全にカメラをstopする
+  const safeStop = useCallback(async () => {
+    if (isStoppingRef.current || !isRunningRef.current) return;
+    isStoppingRef.current = true;
+    const scanner = scannerRef.current;
+    isRunningRef.current = false;
+    try {
+      if (scanner) {
+        await scanner.stop();
+        scanner.clear();
+      }
+    } catch {
+      // 既に停止済み・非対応状態などは無視
+    } finally {
+      isStoppingRef.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-
-    // 実行中の場合のみ安全にstopする
-    async function safeStop() {
-      if (isStoppingRef.current || !isRunningRef.current) return;
-      isStoppingRef.current = true;
-      const scanner = scannerRef.current;
-      isRunningRef.current = false;
-      try {
-        if (scanner) {
-          await scanner.stop();
-          scanner.clear();
-        }
-      } catch {
-        // 既に停止済み・非対応状態などは無視
-      } finally {
-        isStoppingRef.current = false;
-      }
-    }
 
     async function start() {
       // 動的インポートでSSRエラーを回避
@@ -71,9 +76,9 @@ export function QrScanner({ onScan, onClose }: Props) {
         isRunningRef.current = true;
         setWaitingPermission(false); // カメラ映像が始まったので注意書きを消す
       } catch {
-        // カメラ許可拒否などはクローズで対応
+        // カメラ許可拒否などは、写真からの読み取りだけでも使えるようにそのまま続行する
         isRunningRef.current = false;
-        onClose();
+        setWaitingPermission(false);
       }
     }
 
@@ -83,7 +88,42 @@ export function QrScanner({ onScan, onClose }: Props) {
       cancelled = true;
       safeStop();
     };
-  }, [onScan, onClose]);
+  }, [onScan, safeStop]);
+
+  // 「写真から選ぶ」ボタン
+  function handlePickFile() {
+    setFileError("");
+    fileInputRef.current?.click();
+  }
+
+  // 写真が選択されたときの処理
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // 同じ画像を選び直しても onChange が発火するようにリセット
+    if (!file) return;
+
+    setFileError("");
+    setIsReadingFile(true);
+
+    // 写真を読み取る間はカメラを止めておく
+    await safeStop();
+
+    try {
+      // 動的インポート（カメラ許可が拒否されていた場合はまだ読み込まれていないため）
+      const { Html5Qrcode } = await import("html5-qrcode");
+      let scanner = scannerRef.current;
+      if (!scanner) {
+        scanner = new Html5Qrcode("qr-reader") as unknown as Html5QrcodeInstance;
+        scannerRef.current = scanner;
+      }
+      const decodedText = await scanner.scanFile(file, false);
+      onScan(decodedText);
+    } catch {
+      setFileError("この写真から2次元コードを読み取れませんでした。別の写真でお試しください。");
+    } finally {
+      setIsReadingFile(false);
+    }
+  }
 
   return (
     <div style={{
@@ -106,8 +146,10 @@ export function QrScanner({ onScan, onClose }: Props) {
             }}
           >✕</button>
         </div>
+
         {/* html5-qrcode はこのIDのdivにカメラ映像を描画する */}
         <div id="qr-reader" ref={containerRef} style={{ width: "100%" }} />
+
         {waitingPermission && (
           <p style={{
             fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: "#888",
@@ -116,6 +158,37 @@ export function QrScanner({ onScan, onClose }: Props) {
             カメラの使用を許可してください
           </p>
         )}
+
+        {/* 写真（保存済みのQR画像）から読み取る */}
+        <div style={{ marginTop: 16, textAlign: "center" }}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <button
+            onClick={handlePickFile}
+            disabled={isReadingFile}
+            style={{
+              fontFamily: "'Noto Sans JP', sans-serif", fontSize: 13, fontWeight: 700,
+              color: "#8cd15c", background: "#fff", border: "1px solid #8cd15c",
+              borderRadius: 20, padding: "8px 20px", cursor: isReadingFile ? "default" : "pointer",
+              opacity: isReadingFile ? 0.6 : 1,
+            }}
+          >
+            {isReadingFile ? "読み取り中…" : "📷 写真から読み込む"}
+          </button>
+          {fileError && (
+            <p style={{
+              fontFamily: "'Noto Sans JP', sans-serif", fontSize: 12, color: "#e2551e",
+              marginTop: 8,
+            }}>
+              {fileError}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
